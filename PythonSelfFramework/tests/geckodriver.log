@@ -1,0 +1,40 @@
+1642030388727	geckodriver	INFO	Listening on 127.0.0.1:60178
+1642030391819	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "60179" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileHBP9dw"
+1642030392634	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileHBP9dw\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:60179/devtools/browser/9854cd7f-1f71-45e0-a248-19a426419dc2
+1642030395158	Marionette	INFO	Listening on port 60191
+1642030395573	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1642030424541	Marionette	INFO	Stopped listening on port 60191
+
+###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1642030455205	geckodriver	INFO	Listening on 127.0.0.1:60388
+1642030458255	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "60389" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileeVw7Ya"
+1642030458566	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileeVw7Ya\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:60389/devtools/browser/69f243a6-e639-40c9-a934-87dff77c3263
+1642030460505	Marionette	INFO	Listening on port 60401
+1642030460958	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1642030486520	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+1642030488319	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+1642030492974	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 17: ReferenceError: Namespace is not defined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 23: ReferenceError: $ is not defined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 249: ReferenceError: Namespace is not defined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 345: TypeError: Button is undefined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 347: TypeError: Button is undefined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 369: TypeError: Button is undefined
+JavaScript error: https://account.activedirectory.windowsazure.com/applications/redirecttofederatedapplication.aspx?Operation=LinkedSignIn&applicationId=333756f5-8fc4-48c7-8e65-ecdd35707105&tenantId=fce9d3d5-72c9-424c-b12d-75423976e9bf, line 369: ReferenceError: Microsoft is not defined
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 106: unreachable code after return statement
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 173: unreachable code after return statement
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 184: unreachable code after return statement
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 106: unreachable code after return statement
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 173: unreachable code after return statement
+JavaScript warning: https://optimatax--develop.lightning.force.com/projRes/insights/gen/static/dashboards/js/lightningDashboard.app.547f395d22a42baed6f4.js, line 184: unreachable code after return statement
+1642030554250	Marionette	INFO	Stopped listening on port 60401
+JavaScript error: resource://devtools/client/jsonview/Sniffer.jsm, line 56: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsIChannel.contentType]
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+
+###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
