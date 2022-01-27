@@ -1,0 +1,16 @@
+1641434887093	geckodriver	INFO	Listening on 127.0.0.1:59710
+1641434890185	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "59711" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofiledD0a7u"
+1641434890602	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofiledD0a7u\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:59711/devtools/browser/9815c0c1-f8c0-4b79-adeb-1d2b086ccd8f
+1641434892560	Marionette	INFO	Listening on port 59722
+1641434892912	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1641434904235	Marionette	WARN	TimedPromise timed out after 5000 ms: stacktrace:
+TimedPromise/<@chrome://remote/content/marionette/sync.js:238:19
+TimedPromise@chrome://remote/content/marionette/sync.js:223:10
+GeckoDriver.prototype.minimizeWindow@chrome://remote/content/marionette/driver.js:2315:11
+1641434908601	Marionette	INFO	Stopped listening on port 59722
+
+###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
