@@ -38,7 +38,7 @@ def setup(request):
     officeLoginPages.next_button().click()
     office_homepage = O365HomePage(driver)
     office_homepage.waffle_icon().click()
-    office_homepage.sf_dev_button().click()
+    office_homepage.sf_dev_button()
     request.cls.driver = driver
     yield
     driver.quit()

@@ -1,7 +1,5 @@
 from selenium.webdriver.common.by import By
 
-from pageObjects import SfHomePage
-
 
 class O365HomePage:
 
@@ -15,5 +13,11 @@ class O365HomePage:
         return self.driver.find_element(*O365HomePage.waffle)
 
     def sf_dev_button(self):
-        return self.driver.find_element(*O365HomePage.sf_dev)
+        self.driver.find_element(*O365HomePage.sf_dev).click()
+        #may need to insert a wait until SF page loads
+        self.driver.execute_script("window.open('about:blank','disposable_email');")
+        self.driver.execute_script("window.open('about:blank','disposable_email');")
+        self.driver.switch_to.window("disposable_email")
+        self.driver.get("https://www.disposablemail.com/")
+
 

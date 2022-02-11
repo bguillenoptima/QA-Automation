@@ -5,50 +5,46 @@ import time
 
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+
+from pageObjects.DisposableEmailPage import DisposableEmailPage
+from pageObjects.SfHomePage import SalesForceHomePage
 from utilities.BaseClass import BaseClass
 import datetime
-from selenium.webdriver.common.keys import Keys
 
 
 class TestOne(BaseClass):
 
     def test_e2e(self):
+        log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
 
+        emailInbox = DisposableEmailPage(self.driver)
+        email = emailInbox.store_email().text
+        first_name_last_name = email.split(".")
+        firstName = first_name_last_name[0].capitalize()
+        parsedLastname = first_name_last_name[1].split("@")
+        lastName = parsedLastname[0].capitalize()
 
-        sf_window = self.driver.window_handles[1]
+        sf_window = self.driver.window_handles[2]
         self.driver.switch_to.window(sf_window)
         try:
             self.driver.find_element(By.LINK_TEXT, "Office 365").click()
             self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
-
         except Exception as e:
             self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
-            print(e)
+            log.info(e)
         try:
             alert = self.driver.switch_to.alert()
             alert.accept()
         except Exception as e:
-            print(e)
+            log.info(e)
 
-        self.driver.find_element(By.XPATH, "//div[@class='slds-card__body']/button").click()
-
-        self.driver.execute_script("window.open('about:blank','disposable_email');")
-        self.driver.switch_to.window("disposable_email")
-        self.driver.get("https://www.disposablemail.com/")
-        email = self.driver.find_element(By.CSS_SELECTOR, "span[id='email']").text
-
-        self.driver.switch_to.window(sf_window)
-        self.driver.find_element(By.XPATH, "//div[@id='modal-content-id-1']/div[6]/input").send_keys(email)
-
-        first_name_last_name = email.split(".")
-        firstName = first_name_last_name[0].capitalize()
-        parsedLastname = first_name_last_name[1].split("@")
-        lastName = parsedLastname[1].capitalize()
-
-        self.driver.find_element(By.XPATH, "//div[@id='modal-content-id-1']/div[1]/input").send_keys(firstName + " " + lastName)
-        self.driver.find_element(By.CSS_SELECTOR, "button[title='Create Data']").click()
+        sf_HomePage = SalesForceHomePage(self.driver)
+        sf_HomePage.create_data_button().click()
+        sf_HomePage.create_data_email().send_keys(email)
+        sf_HomePage.create_data_name().send_keys(firstName + " " + lastName)
+        leadPage = sf_HomePage.create_data_submit()
 
         button = self.driver.find_element_by_xpath("//button[@title='Edit Phone, Primary']/lightning-primitive-icon")
         self.driver.execute_script("arguments[0].click();", button)
