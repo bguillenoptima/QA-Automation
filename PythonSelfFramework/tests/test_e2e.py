@@ -44,16 +44,14 @@ class TestOne(BaseClass):
         sf_HomePage.create_data_button().click()
         sf_HomePage.create_data_email().send_keys(email)
         sf_HomePage.create_data_name().send_keys(firstName + " " + lastName)
-        leadPage = sf_HomePage.create_data_submit()
 
-        button = self.driver.find_element_by_xpath("//button[@title='Edit Phone, Primary']/lightning-primitive-icon")
+        leadPage = sf_HomePage.create_data_submit()
+        button = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", button)
 
-        tel_css_selector = self.driver.find_element(By.XPATH, "//a[contains(text(), 'Contact Details')]/parent::h2/parent::div/parent::div/parent::div/parent::div/div[2]/div/div/div[2]/div/section/div[2]/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div/input").get_attribute(
-            "value")
-
-        self.driver.find_element(By.XPATH, "//a[contains(text(), 'Contact Details')]/parent::h2/parent::div/parent::div/parent::div/parent::div/div[2]/div/div/div[2]/div/section/div[2]/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div/input").clear()
-        save = self.driver.find_element_by_xpath("//button[@title='Save']")
+        tel_css_selector = leadPage.phone_number().get_attribute("value")
+        leadPage.phone_number().clear()
+        save = leadPage.contact_details_save()
         self.driver.execute_script("arguments[0].click();", save)
 
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
