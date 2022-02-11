@@ -1,3 +1,4 @@
+import pytest
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
@@ -6,6 +7,7 @@ import time
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
+from TestData.ClientData import ClientData
 from pageObjects.DisposableEmailPage import DisposableEmailPage
 from pageObjects.SfHomePage import SalesForceHomePage
 from utilities.BaseClass import BaseClass
@@ -13,21 +15,19 @@ import datetime
 
 
 class TestOne(BaseClass):
-
     def test_e2e(self):
+
         log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
 
-        emailInbox = DisposableEmailPage(self.driver)
-        email = emailInbox.store_email().text
-        first_name_last_name = email.split(".")
-        firstName = first_name_last_name[0].capitalize()
-        parsedLastname = first_name_last_name[1].split("@")
-        lastName = parsedLastname[0].capitalize()
+        nameAndEmail = ClientData(self.driver)
+
+        clientInformation = nameAndEmail.getData()
 
         sf_window = self.driver.window_handles[2]
         self.driver.switch_to.window(sf_window)
+
         try:
             self.driver.find_element(By.LINK_TEXT, "Office 365").click()
             self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
@@ -42,8 +42,8 @@ class TestOne(BaseClass):
 
         sf_HomePage = SalesForceHomePage(self.driver)
         sf_HomePage.create_data_button().click()
-        sf_HomePage.create_data_email().send_keys(email)
-        sf_HomePage.create_data_name().send_keys(firstName + " " + lastName)
+        sf_HomePage.create_data_email().send_keys(clientInformation["emailAddress"])
+        sf_HomePage.create_data_name().send_keys(clientInformation["firstname"] + " " + clientInformation["lastname"])
 
         leadPage = sf_HomePage.create_data_submit()
         button = leadPage.phone_edit_pencil()
@@ -54,7 +54,8 @@ class TestOne(BaseClass):
         save = leadPage.contact_details_save()
         self.driver.execute_script("arguments[0].click();", save)
 
-        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
+        self.verifyCSSPresence("h3[title='Phone']")
+        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
         time.sleep(2)
         phone_lead_conversion_window = self.driver.find_element(By.CSS_SELECTOR, "h3[title='Phone']").text
         self.driver.execute_script("window.scrollTo(0,0);")
@@ -187,12 +188,11 @@ class TestOne(BaseClass):
             self.driver.execute_script("arguments[0].click();", continue_button_location)
 
         self.driver.switch_to.window(sf_window)
-
         self.driver.refresh()
 
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
         manage_docs_element = self.driver.find_element(By.XPATH, "//ul[@role='tablist']/li[7]/a")
-        self.driver.execute_script("arguments[0].click();", manage_docs_element)
+        #elf.driver.execute_script("arguments[0].click();", manage_docs_element)
 
         wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
             (By.XPATH, "//div[@class='content iframe-parent']/iframe")))
@@ -207,7 +207,7 @@ class TestOne(BaseClass):
         self.driver.switch_to.window("admin_portal")
         self.driver.get("https://admin-dev.optimatax.com/dashboard")
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(firstName)
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["firstname"])
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT,"Opportunities").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunity").click()
