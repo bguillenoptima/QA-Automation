@@ -3,8 +3,8 @@ import time
 from selenium import webdriver
 import pytest
 
-from pageObjects.O365EmailPage import O365EmailPage
 from pageObjects.O365HomePage import O365HomePage
+from pageObjects.O365LoginPages import O365LoginPages
 
 
 def pytest_addoption(parser):
@@ -25,19 +25,21 @@ def setup(request):
     driver.implicitly_wait(20)
     driver.get("https://portal.office365.com")
     driver.maximize_window()
-    office_email_page = O365EmailPage(driver)
-    office_email_page.email_items()
-    office_pw_page = office_email_page.email_next_button()
+    officeLoginPages = O365LoginPages(driver)
+    officeLoginPages.email_field("bguillen@optimataxrelief.com")
+    officeLoginPages.next_button().click()
     time.sleep(1)
-    office_pw_page.send_password()
-    office_multi_factor_auth = office_pw_page.password_next()
+    officeLoginPages.password_field()
+    officeLoginPages.next_button().click()
     # add twilio logic here
     time.sleep(10)
-    office_multi_factor_auth.click_verify()
+    officeLoginPages.next_button().click()
     time.sleep(2)
-    office_multi_factor_auth.click_verify()
+    officeLoginPages.next_button().click()
     office_homepage = O365HomePage(driver)
-    office_homepage.click_waffle()
-    office_homepage.click_sf_dev()
+    office_homepage.waffle_icon().click()
+    office_homepage.sf_dev_button().click()
     request.cls.driver = driver
+    yield
+    driver.quit()
 

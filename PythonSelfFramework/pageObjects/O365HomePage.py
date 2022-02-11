@@ -1,5 +1,7 @@
 from selenium.webdriver.common.by import By
 
+from pageObjects import SfHomePage
+
 
 class O365HomePage:
 
@@ -9,8 +11,9 @@ class O365HomePage:
     waffle = (By.CSS_SELECTOR, "button[id='O365_MainLink_NavMenu']")
     sf_dev = (By.CSS_SELECTOR, "a[aria-label='Salesforce (Dev)']")
 
-    def click_waffle(self):
-        self.driver.find_element(*O365HomePage.waffle).click()
+    def waffle_icon(self):
+        return self.driver.find_element(*O365HomePage.waffle)
 
-    def click_sf_dev(self):
-        self.driver.find_element(*O365HomePage.sf_dev).click()
+    def sf_dev_button(self):
+        return self.driver.find_element(*O365HomePage.sf_dev)
+

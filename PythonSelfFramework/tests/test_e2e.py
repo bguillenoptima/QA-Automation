@@ -16,6 +16,7 @@ class TestOne(BaseClass):
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
 
+
         sf_window = self.driver.window_handles[1]
         self.driver.switch_to.window(sf_window)
         try:
