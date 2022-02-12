@@ -82,11 +82,13 @@ class TestOne(BaseClass):
         log.info("Select 'save' in 'lead conversion' modal")
         #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
+        time.sleep(2)
         self.driver.refresh()
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         payment_schedule_button = invOpportunity.payment_schedule_button()
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
         log.info("In the investigation opportunity, selected 'create payment schedules'")
+
 
         #time.sleep(5)
         try:
@@ -96,10 +98,11 @@ class TestOne(BaseClass):
             log.info("Selected payment date <= 30 days and selected 'save'")
             wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
         except:
-            log.warning("A modal should appeared with no fields so will refresh and try again")
+            log.warning("A modal appeared with no fields so will refresh and try again")
             self.driver.refresh()
             log.info("Refreshed successfully")
             wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
+            payment_schedule_button = invOpportunity.payment_schedule_button()
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
             log.warning("In the investigation opportunity, selected 'create payment schedules'")
             wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
@@ -134,10 +137,11 @@ class TestOne(BaseClass):
 
         portal = self.driver.window_handles[3]
         self.driver.switch_to.window(portal)
-        self.driver.find_element_by_name("password").send_keys("123456")
+        self.driver.find_element_by_name("password").send_keys(self.dataLoad[0]["client_password"])
         self.driver.find_element_by_name("password_confirmation").send_keys("123456")
         self.driver.find_element(By.CSS_SELECTOR, "button[id='login-btn'").click()
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Acknowledge')]").click()
+        wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Started')]")))
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
         self.driver.find_element(By.LINK_TEXT, "I Agree").click()
 
@@ -232,7 +236,7 @@ class TestOne(BaseClass):
         except:
             print("Unable to verify alert-success for Payment")
 
-        self.driver.switch_to.window(sf_window)
+        self.driver.switch_to.window(tabs[1])
 
 
 
