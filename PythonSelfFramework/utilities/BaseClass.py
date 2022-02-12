@@ -19,6 +19,7 @@ logger.addHandler(fileHandler)  #filehandler object
 
 @pytest.mark.usefixtures("setup", "dataLoad")
 class BaseClass:
+
     def getLogger(self):
         loggerName = inspect.stack()[1][3]
         logger = logging.getLogger(loggerName)
@@ -31,8 +32,18 @@ class BaseClass:
         logger.setLevel(logging.DEBUG)
         return logger
 
-    def checkPresence(self,locator , syntax):
-        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator, syntax)))
+    #An expectation for checking that an element is present on the DOM
+    #of a page. This does not necessarily mean that the element is visible.
+    #locator - used to find the element (by, path)
+    #returns the WebElement once it is located
+    def checkPresence(self, locator):
+        element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator)))
+        return element
+
+    def checkFrameAndSwitchToIt(self, locator):
+        element = WebDriverWait(self.driver, 20).until(EC.frame_to_be_available_and_switch_to_it((locator)))
+        return element
+
     def verifyCSSPresence(self,text):
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((text)))
 
@@ -40,7 +51,8 @@ class BaseClass:
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator, syntax)))
 
     def verifyLinkPresence(self, text):
-        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.LINK_TEXT, text)))
+        element = WebDriverWait(self.driver, 10).until(
+        EC.presence_of_element_located((By.LINK_TEXT, text)))
 
     def verifyVisibilityOf(self, locator, text):
         WebDriverWait(self.driver, 20).until(EC.visibility_of((locator, text)))
@@ -73,15 +85,18 @@ class BaseClass:
         return date
 
     def selectDate(self):
-        wait = WebDriverWait(self.driver, 20)
+        #wait = WebDriverWait(self.driver, 20)
         current_time = datetime.datetime.now()
         day = int(current_time.day)
         month = int(current_time.strftime(("%m")))
-        date = str(current_time.strftime(("%m"))) + str(current_time.day) + str(current_time.year)
-        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
-        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
+        #date = str(current_time.strftime(("%m"))) + str(current_time.day) + str(current_time.year)
+
+        self.checkFrameAndSwitchToIt((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe"))
+        date_element = self.checkPresence((By.CSS_SELECTOR, "input[type='date']"))
+        #wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
+        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
+        #date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
         action = ActionChains(self.driver)
-        date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
         action.move_to_element(date_element).perform()
         action.click(date_element).perform()
         action.send_keys(Keys.ARROW_UP).send_keys(Keys.ARROW_LEFT).perform()
