@@ -31,6 +31,7 @@ class TestOne(BaseClass):
             log.info(e)
         try:
             sf_HomePage.create_data_button().click()
+            log.info("In the Salesforce sales console, on the home page, selected 'create data'")
         except Exception as e:
             alert = self.driver.switch_to.alert()
             alert.accept()
@@ -42,19 +43,22 @@ class TestOne(BaseClass):
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
         leadPage = sf_HomePage.create_data_submit()
+        log.info("Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'")
         button = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", button)
+
 
         tel_css_selector = leadPage.phone_number().get_attribute("value")
         leadPage.phone_number().clear()
         save = leadPage.contact_details_save()
         self.driver.execute_script("arguments[0].click();", save)
+        log.info("Deleted primary phone field from the created lead and selected 'save'")
 
-        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
-        time.sleep(2)
-        phone_lead_conversion_window = leadPage.conversion_readiness_phone().text
+        wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
+        log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
+                 " field that needs to be entered in order to convert")
         self.driver.execute_script("window.scrollTo(0,0);")
-        assert "Phone" in phone_lead_conversion_window
+
         time.sleep(1)
         self.driver.refresh()
 
@@ -67,31 +71,42 @@ class TestOne(BaseClass):
         secondSave = leadPage.contact_details_save()
         action.move_to_element(secondSave).perform()
         action.click(secondSave).perform()
+        log.info("Entered all required fields and selected 'save'")
 
 
         convertButton = leadPage.convert_button()
         self.driver.execute_script("arguments[0].click();", convertButton)
+        log.info("Selected 'convert' in 'lead conversion readiness' window")
 
         invOpportunity = leadPage.lead_conversion_save()
+        log.info("Select 'save' in 'lead conversion' modal")
+        #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         self.driver.refresh()
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         payment_schedule_button = invOpportunity.payment_schedule_button()
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+        log.info("In the investigation opportunity, selected 'create payment schedules'")
 
-        time.sleep(5)
+        #time.sleep(5)
         try:
             self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
             self.driver.switch_to.default_content()
+            log.info("Selected payment date <= 30 days and selected 'save'")
             wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
         except:
+            log.warning("A modal should appeared with no fields so will refresh and try again")
             self.driver.refresh()
+            log.info("Refreshed successfully")
             wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            log.warning("In the investigation opportunity, selected 'create payment schedules'")
             wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
             wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
+            self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
+            log.info("Selected payment date <= 30 days and selected 'save'")
 
 
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))

@@ -31,13 +31,15 @@ class BaseClass:
         logger.setLevel(logging.DEBUG)
         return logger
 
+    def checkPresence(self,locator , syntax):
+        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator, syntax)))
     def verifyCSSPresence(self,text):
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((text)))
 
     def verifyPresence(self, locator, syntax):
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator, syntax)))
 
-    def verifyLinkPresnce(self, text):
+    def verifyLinkPresence(self, text):
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.LINK_TEXT, text)))
 
     def verifyVisibilityOf(self, locator, text):
