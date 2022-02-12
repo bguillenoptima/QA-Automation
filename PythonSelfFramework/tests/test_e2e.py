@@ -80,13 +80,20 @@ class TestOne(BaseClass):
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
 
         time.sleep(5)
+        try:
+            self.selectDate()
+            invOpportunity.iframe_payment_save_button().click()
+            self.driver.switch_to.default_content()
+            wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
+        except:
+            self.driver.refresh()
+            wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
+            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
+            wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
+            invOpportunity.iframe_payment_save_button().click()
 
-        self.selectDate()
-        invOpportunity.iframe_payment_save_button().click()
-        wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
-        #time.sleep(10)
 
-        self.driver.switch_to.default_content()
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
         manage_docs_element = invOpportunity.manage_docs_tab()
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
@@ -97,8 +104,9 @@ class TestOne(BaseClass):
         wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe[@id='manage-forms']")))
         time.sleep(2)
         self.driver.find_element(By.CSS_SELECTOR, "i[class ='fa fa-rocket']").click()
-        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "div[style='display: block;']")))
+        wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, "button[class='btn btn-success send-email']")))
         self.driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-success send-email']").click()
+        tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])
         self.driver.find_element(By.CSS_SELECTOR, "a[title='Refresh this page']").click()
 
@@ -107,6 +115,7 @@ class TestOne(BaseClass):
         self.driver.switch_to.frame("iframeMail")
         self.driver.find_element(By.LINK_TEXT, "Create Account →").click()
         time.sleep(1)
+
 
         portal = self.driver.window_handles[3]
         self.driver.switch_to.window(portal)
