@@ -54,7 +54,9 @@ class TestOne(BaseClass):
         self.driver.execute_script("arguments[0].click();", save)
         log.info("Deleted primary phone field from the created lead and selected 'save'")
 
-        wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
+        # Checking visibility means the element is displayed returns the WebElement
+        self.checkVisibility(leadPage.conversionReadinessPhone)
+        #wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
                  " field that needs to be entered in order to convert")
         self.driver.execute_script("window.scrollTo(0,0);")
@@ -82,7 +84,7 @@ class TestOne(BaseClass):
         log.info("Select 'save' in 'lead conversion' modal")
         #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         self.checkPresence(invOpportunity.paymentScheduleButton)
-        time.sleep(2)
+        time.sleep(5)
         self.driver.refresh()
 
         # checkPresence will return WebElement and check presence
@@ -90,24 +92,23 @@ class TestOne(BaseClass):
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
         log.info("In the investigation opportunity, selected 'create payment schedules'")
 
-
-        #time.sleep(5)
         try:
             self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
             self.driver.switch_to.default_content()
             log.info("Selected payment date <= 30 days and selected 'save'")
-            wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
+            self.checkInvisibility(invOpportunity.paymentModuleHeader)
         except:
             log.warning("A modal appeared with no fields so will refresh and try again")
             self.driver.refresh()
             log.info("Refreshed successfully")
             # checkPresence will return WebElement and check presence
-            payment_schedule_button = self.checkPresence(invOpportunity.payment_schedule_button())
+            payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
             log.warning("In the investigation opportunity, selected 'create payment schedules'")
             self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
+            self.driver.switch_to.default_content()
             log.info("Selected payment date <= 30 days and selected 'save'")
 
 
@@ -125,7 +126,7 @@ class TestOne(BaseClass):
         self.driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-success send-email']").click()
         tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])
-        self.driver.find_element(By.CSS_SELECTOR, "a[title='Refresh this page']").click()
+        #self.driver.find_element(By.CSS_SELECTOR, "a[title='Refresh this page']").click()
 
         self.driver.switch_to.default_content()
         self.driver.find_element(By.XPATH, "//td[contains(text(),'Welcome to Optima Tax Relief')]").click()

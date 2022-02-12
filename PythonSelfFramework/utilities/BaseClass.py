@@ -44,6 +44,14 @@ class BaseClass:
         element = WebDriverWait(self.driver, 20).until(EC.frame_to_be_available_and_switch_to_it((locator)))
         return element
 
+    def checkInvisibility(self, locator):
+        element = WebDriverWait(self.driver, 20).until(expected_conditions.invisibility_of_element((locator)))
+        return element
+
+    def checkVisibility(self, locator):
+        element = WebDriverWait(self.driver, 20).until(expected_conditions.visibility_of_element_located((locator)))
+        return element
+
     def verifyCSSPresence(self,text):
         WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((text)))
 
@@ -93,9 +101,7 @@ class BaseClass:
 
         self.checkFrameAndSwitchToIt((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe"))
         date_element = self.checkPresence((By.CSS_SELECTOR, "input[type='date']"))
-        #wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
-        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
-        #date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
+
         action = ActionChains(self.driver)
         action.move_to_element(date_element).perform()
         action.click(date_element).perform()
