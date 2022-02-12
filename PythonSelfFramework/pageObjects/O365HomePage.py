@@ -1,7 +1,5 @@
 from selenium.webdriver.common.by import By
 
-from pageObjects import SfHomePage
-
 
 class O365HomePage:
 

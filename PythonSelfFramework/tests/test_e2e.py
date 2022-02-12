@@ -8,6 +8,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from pageObjects.SfHomePage import SalesForceHomePage
+from pageObjects.SfInvOpportunity import SalesForceInvOpportunityPage
 from utilities.BaseClass import BaseClass
 import datetime
 
@@ -17,7 +18,6 @@ class TestOne(BaseClass):
         log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
-        clientInformation = self.getTempEmail()
 
         sf_window = self.driver.window_handles[1]
         self.driver.switch_to.window(sf_window)
@@ -34,8 +34,12 @@ class TestOne(BaseClass):
         except Exception as e:
             log.info(e)
 
+
         sf_HomePage = SalesForceHomePage(self.driver)
         sf_HomePage.create_data_button().click()
+
+        clientInformation = self.getTempEmail()
+        self.driver.switch_to.window(sf_window)
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
@@ -51,7 +55,7 @@ class TestOne(BaseClass):
         #self.verifyCSSPresence("h3[title='Phone']")
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
         time.sleep(2)
-        phone_lead_conversion_window = leadPage.phone_number().text
+        phone_lead_conversion_window = leadPage.conversion_readiness_phone().text
         self.driver.execute_script("window.scrollTo(0,0);")
         assert "Phone" in phone_lead_conversion_window
         time.sleep(1)
@@ -59,40 +63,38 @@ class TestOne(BaseClass):
 
         #adding wait because execute script of clicking the edit penchil is happening before the pencil is loaded.
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "button[title='Edit Phone, Primary'] lightning-primitive-icon")))
-        edit_pencil = self.driver.find_element(By.XPATH,"//button[@title='Edit Phone, Primary']/lightning-primitive-icon")
+        edit_pencil = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", edit_pencil)
         self.driver.execute_script("window.scrollTo(0,0);")
-        self.driver.find_element(By.XPATH,"//a[contains(text(), 'Contact Details')]/parent::h2/parent::div/parent::div/parent::div/parent::div/div[2]/div/div/div[2]/div/section/div[2]/div/div[1]/div/div/div/div/div[2]/div[1]/div/div/div/input").send_keys(tel_css_selector)
-        second_save = self.driver.find_element(By.XPATH, "//span[contains(text(),'Save' )]")
-        action.move_to_element(second_save).perform()
-        action.click(second_save).perform()
+
+        leadPage.phone_number().send_keys(tel_css_selector)
+        secondSave = leadPage.contact_details_save()
+        action.move_to_element(secondSave).perform()
+        action.click(secondSave).perform()
 
 
-        convert_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Convert')]")
-        self.driver.execute_script("arguments[0].click();", convert_button)
+        convertButton = leadPage.convert_button()
+        self.driver.execute_script("arguments[0].click();", convertButton)
 
-        java_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Save')]")
-        self.driver.execute_script("arguments[0].click();", java_button)
+
+        invOpportunity = leadPage.lead_conversion_save()
 
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         self.driver.refresh()
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
-        create_payment_schedule_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")
-        self.driver.execute_script("arguments[0].click();", create_payment_schedule_button)
+        payment_schedule_button = invOpportunity.payment_schedule_button()
+        self.driver.execute_script("arguments[0].click();", payment_schedule_button)
 
-        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
-        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
-        date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
-        current_time = datetime.datetime.now()
-        date = str(current_time.strftime(("%m"))) + str(current_time.day) + str(current_time.year)
-        print(date)
-
+        #wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
+        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
+        #date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
         time.sleep(5)
         #action.move_to_element(date_element).perform()
         #action.click(date_element).perform()
         #action.send_keys(Keys.ARROW_UP).send_keys(Keys.ARROW_LEFT).perform()
         #action.send_keys(Keys.ARROW_DOWN).send_keys(Keys.ARROW_LEFT).perform()
         #action.send_keys(Keys.ARROW_UP).perform()
+        self.selectDate()
         self.driver.find_element(By.CSS_SELECTOR, "input[type = 'submit']").click()
         time.sleep(10)
 

@@ -2,22 +2,12 @@ import time
 
 from selenium import webdriver
 import pytest
-import logging
 from TestData.PagesData import PagesData
 from pageObjects.O365HomePage import O365HomePage
 from pageObjects.O365LoginPages import O365LoginPages
 
 
 driver = None
-
-logger = logging.getLogger(__name__)
-
-fileHandler = logging.FileHandler('logfile.log')
-
-logger.addHandler(fileHandler)  #filehandler object
-logger.debug("A debug statement is executed")
-logger.info("Information statement")
-logger.debug("A debug statement is executed")
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -35,9 +25,9 @@ def setup(request):
         driver = webdriver.Firefox(executable_path="C:\\geckodriver.exe")
     elif browser_name == "edge":
         driver = webdriver.Edge(executable_path="C:\\msedgedriver.exe")
-
     driver.maximize_window()
     driver.implicitly_wait(20)
+
     driver.get("https://portal.office365.com")
     officeLoginPages = O365LoginPages(driver)
 
@@ -61,8 +51,6 @@ def setup(request):
     office_homepage = O365HomePage(driver)
     office_homepage.waffle_icon().click()
     office_homepage.sf_dev_button().click()
-    tabs = driver.window_handles
-    logger.debug(tabs)
     request.cls.driver = driver
     yield
     driver.quit()
