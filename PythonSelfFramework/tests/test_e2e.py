@@ -7,8 +7,6 @@ import time
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
-from TestData.ClientData import ClientData
-from pageObjects.DisposableEmailPage import DisposableEmailPage
 from pageObjects.SfHomePage import SalesForceHomePage
 from utilities.BaseClass import BaseClass
 import datetime
@@ -16,16 +14,12 @@ import datetime
 
 class TestOne(BaseClass):
     def test_e2e(self):
-
         log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
+        clientInformation = self.getTempEmail()
 
-        nameAndEmail = ClientData(self.driver)
-
-        clientInformation = nameAndEmail.getData()
-
-        sf_window = self.driver.window_handles[2]
+        sf_window = self.driver.window_handles[1]
         self.driver.switch_to.window(sf_window)
 
         try:
@@ -42,8 +36,8 @@ class TestOne(BaseClass):
 
         sf_HomePage = SalesForceHomePage(self.driver)
         sf_HomePage.create_data_button().click()
-        sf_HomePage.create_data_email().send_keys(clientInformation["emailAddress"])
-        sf_HomePage.create_data_name().send_keys(clientInformation["firstname"] + " " + clientInformation["lastname"])
+        sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
+        sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
         leadPage = sf_HomePage.create_data_submit()
         button = leadPage.phone_edit_pencil()
@@ -54,10 +48,10 @@ class TestOne(BaseClass):
         save = leadPage.contact_details_save()
         self.driver.execute_script("arguments[0].click();", save)
 
-        self.verifyCSSPresence("h3[title='Phone']")
-        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
+        #self.verifyCSSPresence("h3[title='Phone']")
+        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
         time.sleep(2)
-        phone_lead_conversion_window = self.driver.find_element(By.CSS_SELECTOR, "h3[title='Phone']").text
+        phone_lead_conversion_window = leadPage.phone_number().text
         self.driver.execute_script("window.scrollTo(0,0);")
         assert "Phone" in phone_lead_conversion_window
         time.sleep(1)
@@ -175,11 +169,9 @@ class TestOne(BaseClass):
 
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Credit or Debit Card')]").click()
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(
-            "4111111111111111")
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(self.PagesData.pagesData["credit_card_number"])
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(
-            "123")
+        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(self.PagesData.pagesData["client_ssn"])
 
         #check confirm payment schedule button because it goes back to the payment page
         for i in range(4):
@@ -207,7 +199,7 @@ class TestOne(BaseClass):
         self.driver.switch_to.window("admin_portal")
         self.driver.get("https://admin-dev.optimatax.com/dashboard")
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["firstname"])
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT,"Opportunities").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunity").click()
