@@ -16,6 +16,7 @@ class LeadPage:
     conversionSaveButton = (By.XPATH, "//button[contains(text(),'Save')]")
     conversionReadinessPhone = (By.CSS_SELECTOR, "h3[title='Phone']")
 
+
     def phone_edit_pencil(self):
         return self.driver.find_element(*LeadPage.primaryPhoneEditPencil)
 
@@ -36,5 +37,7 @@ class LeadPage:
         self.driver.execute_script("arguments[0].click();", conversionSaveButton)
         inv_opportunity = SalesForceInvOpportunityPage(self.driver)
         return inv_opportunity
+
+
 
 

@@ -12,6 +12,11 @@ class SalesForceHomePage:
     nameField = (By.XPATH, "//div[@id='modal-content-id-1']/div[1]/input")
     emailField = (By.XPATH, "//div[@id='modal-content-id-1']/div[6]/input")
     createDataButtonInForm = (By.CSS_SELECTOR, "button[title='Create Data']")
+    home = (By.LINK_TEXT,"Home")
+    loginButton = (By.LINK_TEXT, "Office 365")
+
+    def nav_console_home(self):
+        return self.driver.find_element(*SalesForceHomePage.home)
 
     def create_data_button(self):
         return self.driver.find_element(*SalesForceHomePage.createDataButton)
@@ -26,4 +31,7 @@ class SalesForceHomePage:
         self.driver.find_element(*SalesForceHomePage.createDataButtonInForm).click()
         leadPage = LeadPage(self.driver)
         return leadPage
+
+    def login(self):
+        self.driver.find_element(*SalesForceHomePage.loginButton)
 

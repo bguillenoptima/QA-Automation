@@ -19,27 +19,25 @@ class TestOne(BaseClass):
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
 
-        sf_window = self.driver.window_handles[1]
-        self.driver.switch_to.window(sf_window)
+        tabs = self.driver.window_handles
+        self.driver.switch_to.window(tabs[1])
+        sf_HomePage = SalesForceHomePage(self.driver)
 
         try:
-            self.driver.find_element(By.LINK_TEXT, "Office 365").click()
-            self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
+            sf_HomePage.nav_console_home().click()
         except Exception as e:
+            sf_HomePage.login().click()
             self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
             log.info(e)
         try:
+            sf_HomePage.create_data_button().click()
+        except Exception as e:
             alert = self.driver.switch_to.alert()
             alert.accept()
-        except Exception as e:
             log.info(e)
 
-
-        sf_HomePage = SalesForceHomePage(self.driver)
-        sf_HomePage.create_data_button().click()
-
         clientInformation = self.getTempEmail()
-        self.driver.switch_to.window(sf_window)
+        self.driver.switch_to.window(tabs[1])
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
@@ -52,7 +50,6 @@ class TestOne(BaseClass):
         save = leadPage.contact_details_save()
         self.driver.execute_script("arguments[0].click();", save)
 
-        #self.verifyCSSPresence("h3[title='Phone']")
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
         time.sleep(2)
         phone_lead_conversion_window = leadPage.conversion_readiness_phone().text
@@ -61,7 +58,6 @@ class TestOne(BaseClass):
         time.sleep(1)
         self.driver.refresh()
 
-        #adding wait because execute script of clicking the edit penchil is happening before the pencil is loaded.
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "button[title='Edit Phone, Primary'] lightning-primitive-icon")))
         edit_pencil = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", edit_pencil)
@@ -76,31 +72,23 @@ class TestOne(BaseClass):
         convertButton = leadPage.convert_button()
         self.driver.execute_script("arguments[0].click();", convertButton)
 
-
         invOpportunity = leadPage.lead_conversion_save()
-
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         self.driver.refresh()
         wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Create Pmt Schedules')]")))
         payment_schedule_button = invOpportunity.payment_schedule_button()
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
 
-        #wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")))
-        #wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[type='date']")))
-        #date_element = self.driver.find_element(By.CSS_SELECTOR, "input[type='date']")
         time.sleep(5)
-        #action.move_to_element(date_element).perform()
-        #action.click(date_element).perform()
-        #action.send_keys(Keys.ARROW_UP).send_keys(Keys.ARROW_LEFT).perform()
-        #action.send_keys(Keys.ARROW_DOWN).send_keys(Keys.ARROW_LEFT).perform()
-        #action.send_keys(Keys.ARROW_UP).perform()
+
         self.selectDate()
-        self.driver.find_element(By.CSS_SELECTOR, "input[type = 'submit']").click()
-        time.sleep(10)
+        invOpportunity.iframe_payment_save_button().click()
+        wait.until(expected_conditions.invisibility_of_element((By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")))
+        #time.sleep(10)
 
         self.driver.switch_to.default_content()
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
-        manage_docs_element = self.driver.find_element(By.XPATH, "//ul[@role='tablist']/li[7]/a")
+        manage_docs_element = invOpportunity.manage_docs_tab()
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
 
         wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//div[@class='content iframe-parent']/iframe")))
@@ -111,7 +99,7 @@ class TestOne(BaseClass):
         self.driver.find_element(By.CSS_SELECTOR, "i[class ='fa fa-rocket']").click()
         wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "div[style='display: block;']")))
         self.driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-success send-email']").click()
-        self.driver.switch_to.window("disposable_email")
+        self.driver.switch_to.window(tabs[2])
         self.driver.find_element(By.CSS_SELECTOR, "a[title='Refresh this page']").click()
 
         self.driver.switch_to.default_content()
