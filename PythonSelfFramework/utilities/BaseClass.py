@@ -32,13 +32,19 @@ class BaseClass:
         logger.setLevel(logging.DEBUG)
         return logger
 
-    #An expectation for checking that an element is present on the DOM
-    #of a page. This does not necessarily mean that the element is visible.
-    #locator - used to find the element (by, path)
-    #returns the WebElement once it is located
+    # An expectation for checking that an element is present on the DOM
+            # of a page. This does not necessarily mean that the element is visible.
+            # locator - used to find the element (by, path)
+            # returns the WebElement once it is located
     def checkPresence(self, locator):
         element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator)))
         return element
+    # An Expectation for checking an element is visible and enabled such that you can click it.
+        # element is either a locator (text) or an WebElement
+        # does not return anything
+
+    def checkClickablity(self, mark):
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(mark))
 
     def checkFrameAndSwitchToIt(self, locator):
         element = WebDriverWait(self.driver, 20).until(EC.frame_to_be_available_and_switch_to_it((locator)))

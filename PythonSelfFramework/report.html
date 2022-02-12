@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 12-Feb-2022 at 01:34:59 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>C:\Program Files\Java\jdk-17.0.2</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "1.0.0", "py": "1.11.0", "pytest": "6.2.5"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.19044-SP0</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"html": "3.1.1", "metadata": "1.11.0"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.9.7</td></tr></table>
+    <h2>Summary</h2>
+    <p>1 tests ran in 198.44 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">0 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">1 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">tests/test_e2e.py::TestOne::test_e2e[dataLoad0]</td>
+          <td class="col-duration">197.63</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div><div><img src="tests/test_e2e.py_TestOne_test_e2e[dataLoad0].png" alt="screenshot" style="width:304px;height:228px;" onclick="window.open(this.src)" align="right"/></div></div>
+            <div class="log">self = &lt;tests.test_e2e.TestOne object at 0x000001FD961038B0&gt;<br/><br/>    def test_e2e(self):<br/>        log = self.getLogger()<br/>        action = ActionChains(self.driver)<br/>        wait = WebDriverWait(self.driver, 20)<br/>    <br/>        tabs = self.driver.window_handles<br/>        self.driver.switch_to.window(tabs[1])<br/>        sf_HomePage = SalesForceHomePage(self.driver)<br/>    <br/>        try:<br/>            sf_HomePage.nav_console_home().click()<br/>        except Exception as e:<br/>            sf_HomePage.login().click()<br/>            self.driver.get(&quot;https://optimatax--develop.lightning.force.com/lightning/page/home&quot;)<br/>            log.info(e)<br/>        try:<br/>            sf_HomePage.create_data_button().click()<br/>            log.info(&quot;In the Salesforce sales console, on the home page, selected &#x27;create data&#x27;&quot;)<br/>        except Exception as e:<br/>            alert = self.driver.switch_to.alert()<br/>            alert.accept()<br/>            log.info(e)<br/>    <br/>        clientInformation = self.getTempEmail()<br/>        self.driver.switch_to.window(tabs[1])<br/>        sf_HomePage.create_data_email().send_keys(clientInformation[&quot;email_address&quot;])<br/>        sf_HomePage.create_data_name().send_keys(clientInformation[&quot;first_name&quot;] + &quot; &quot; + clientInformation[&quot;last_name&quot;])<br/>    <br/>        leadPage = sf_HomePage.create_data_submit()<br/>        log.info(&quot;Filled out the required fields: Name Email set &#x27;stage&#x27; drop-down field as &#x27;lead&#x27; selected &#x27;create data&#x27;&quot;)<br/>        button = leadPage.phone_edit_pencil()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, button)<br/>    <br/>    <br/>        tel_css_selector = leadPage.phone_number().get_attribute(&quot;value&quot;)<br/>        leadPage.phone_number().clear()<br/>        save = leadPage.contact_details_save()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, save)<br/>        log.info(&quot;Deleted primary phone field from the created lead and selected &#x27;save&#x27;&quot;)<br/>    <br/>        wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, &quot;h3[title=&#x27;Phone&#x27;]&quot;)))<br/>        log.info(&quot;Under &#x27;lead conversion readiness&#x27; window–&#x27;convert&#x27; button is not visible and shows phone&quot;<br/>                 &quot; field that needs to be entered in order to convert&quot;)<br/>        self.driver.execute_script(&quot;window.scrollTo(0,0);&quot;)<br/>    <br/>        time.sleep(1)<br/>        self.driver.refresh()<br/>    <br/>        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, &quot;button[title=&#x27;Edit Phone, Primary&#x27;] lightning-primitive-icon&quot;)))<br/>        edit_pencil = leadPage.phone_edit_pencil()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, edit_pencil)<br/>        self.driver.execute_script(&quot;window.scrollTo(0,0);&quot;)<br/>    <br/>        leadPage.phone_number().send_keys(tel_css_selector)<br/>        secondSave = leadPage.contact_details_save()<br/>        action.move_to_element(secondSave).perform()<br/>        action.click(secondSave).perform()<br/>        log.info(&quot;Entered all required fields and selected &#x27;save&#x27;&quot;)<br/>    <br/>    <br/>        convertButton = leadPage.convert_button()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, convertButton)<br/>        log.info(&quot;Selected &#x27;convert&#x27; in &#x27;lead conversion readiness&#x27; window&quot;)<br/>    <br/>        invOpportunity = leadPage.lead_conversion_save()<br/>        log.info(&quot;Select &#x27;save&#x27; in &#x27;lead conversion&#x27; modal&quot;)<br/>        #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM<br/>        wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>        time.sleep(2)<br/>        self.driver.refresh()<br/>        wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>        payment_schedule_button = invOpportunity.payment_schedule_button()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, payment_schedule_button)<br/>        log.info(&quot;In the investigation opportunity, selected &#x27;create payment schedules&#x27;&quot;)<br/>    <br/>    <br/>        #time.sleep(5)<br/>        try:<br/>            self.selectDate()<br/>            invOpportunity.iframe_payment_save_button().click()<br/>            self.driver.switch_to.default_content()<br/>            log.info(&quot;Selected payment date &lt;= 30 days and selected &#x27;save&#x27;&quot;)<br/>            wait.until(expected_conditions.invisibility_of_element((By.XPATH, &quot;//h2[contains(text(), &#x27;Create Payment Schedule&#x27;)]&quot;)))<br/>        except:<br/>            log.warning(&quot;A modal appeared with no fields so will refresh and try again&quot;)<br/>            self.driver.refresh()<br/>            log.info(&quot;Refreshed successfully&quot;)<br/>            wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>            payment_schedule_button = invOpportunity.payment_schedule_button()<br/>            self.driver.execute_script(&quot;arguments[0].click();&quot;, payment_schedule_button)<br/>            log.warning(&quot;In the investigation opportunity, selected &#x27;create payment schedules&#x27;&quot;)<br/>            wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, &quot;div[id=&#x27;modal-content-id-1&#x27;] iframe&quot;)))<br/>            wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, &quot;input[type=&#x27;date&#x27;]&quot;)))<br/>            self.selectDate()<br/>            invOpportunity.iframe_payment_save_button().click()<br/>            log.info(&quot;Selected payment date &lt;= 30 days and selected &#x27;save&#x27;&quot;)<br/>    <br/>    <br/>        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, &quot;//ul[@role=&#x27;tablist&#x27;]/li[7]/a&quot;)))<br/>        manage_docs_element = invOpportunity.manage_docs_tab()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, manage_docs_element)<br/>    <br/>        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, &quot;//div[@class=&#x27;content iframe-parent&#x27;]/iframe&quot;)))<br/>        #putting sleep here because error that iframe cannot be found is thrown<br/>        time.sleep(1)<br/>        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, &quot;//iframe[@id=&#x27;manage-forms&#x27;]&quot;)))<br/>        time.sleep(2)<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;i[class =&#x27;fa fa-rocket&#x27;]&quot;).click()<br/>        wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, &quot;button[class=&#x27;btn btn-success send-email&#x27;]&quot;)))<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;button[class=&#x27;btn btn-success send-email&#x27;]&quot;).click()<br/>        tabs = self.driver.window_handles<br/>        self.driver.switch_to.window(tabs[2])<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;a[title=&#x27;Refresh this page&#x27;]&quot;).click()<br/>    <br/>        self.driver.switch_to.default_content()<br/>        self.driver.find_element(By.XPATH, &quot;//td[contains(text(),&#x27;Welcome to Optima Tax Relief&#x27;)]&quot;).click()<br/>        self.driver.switch_to.frame(&quot;iframeMail&quot;)<br/>        self.driver.find_element(By.LINK_TEXT, &quot;Create Account →&quot;).click()<br/>        time.sleep(1)<br/>    <br/>    <br/>        portal = self.driver.window_handles[3]<br/>        self.driver.switch_to.window(portal)<br/>        self.driver.find_element_by_name(&quot;password&quot;).send_keys(&quot;123456&quot;)<br/>        self.driver.find_element_by_name(&quot;password_confirmation&quot;).send_keys(&quot;123456&quot;)<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;button[id=&#x27;login-btn&#x27;&quot;).click()<br/>        self.driver.find_element(By.XPATH, &quot;//button[contains(text(), &#x27;Acknowledge&#x27;)]&quot;).click()<br/>        wait.until(expected_conditions.visibility_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Started&#x27;)]&quot;)))<br/>        self.driver.find_element(By.XPATH, &quot;//button[contains(text(), &#x27;Started&#x27;)]&quot;).click()<br/>        self.driver.find_element(By.LINK_TEXT, &quot;I Agree&quot;).click()<br/>    <br/>        canvas = self.driver.find_element(By.CSS_SELECTOR, &quot;div[class*=&#x27;pad--body&#x27;] canvas&quot;)<br/>        action.click_and_hold(canvas) \<br/>            .move_by_offset(-10, -15) \<br/>            .move_by_offset(20, 32) \<br/>            .move_by_offset(10, 25) \<br/>            .release()<br/>        action.perform()<br/>        submit_button = self.driver.find_element(By.XPATH, &quot;//button[contains(text(),&#x27;Submit&#x27;)]&quot;)<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, submit_button)<br/>    <br/>        ssn = self.driver.find_element(By.CSS_SELECTOR, &quot;input[name=&#x27;masked_tax_identification_number&#x27;]&quot;)<br/>        ssn.send_keys(&quot;123456789&quot;)<br/>        dob_dropdowns_elements = self.driver.find_elements(By.CSS_SELECTOR, &quot;select[name*=&#x27;birth&#x27;]&quot;)<br/>        for dob in dob_dropdowns_elements:<br/>            date_select = Select(dob)<br/>            date_select.select_by_index(2)<br/>        verify_button = self.driver.find_element(By.CSS_SELECTOR, &quot;button[id=&#x27;show-confirmation-modal&#x27;]&quot;)<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, verify_button)<br/>        self.driver.find_element(By.CSS_SELECTOR,&quot;button[id=&#x27;forms-nav-verify&#x27;]&quot;).click()<br/>    <br/>        for i in range(4):<br/>            try:<br/>                self.driver.find_element(By.PARTIAL_LINK_TEXT, &quot;View&quot;).click()<br/>&gt;               self.driver.find_element(By.LINK_TEXT, &quot;read more...&quot;).click()<br/><br/>tests\test_e2e.py:171: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;50917e673a690e17b327a22b30cac67c&quot;)&gt;, by = &#x27;link text&#x27;, value = &#x27;read more...&#x27;<br/><br/>    def find_element(self, by=By.ID, value=None) -&gt; WebElement:<br/>        &quot;&quot;&quot;<br/>        Find an element given a By strategy and locator.<br/>    <br/>        :Usage:<br/>            ::<br/>    <br/>                element = driver.find_element(By.ID, &#x27;foo&#x27;)<br/>    <br/>        :rtype: WebElement<br/>        &quot;&quot;&quot;<br/>        if isinstance(by, RelativeBy):<br/>            return self.find_elements(by=by, value=value)[0]<br/>    <br/>        if by == By.ID:<br/>            by = By.CSS_SELECTOR<br/>            value = &#x27;[id=&quot;%s&quot;]&#x27; % value<br/>        elif by == By.TAG_NAME:<br/>            by = By.CSS_SELECTOR<br/>        elif by == By.CLASS_NAME:<br/>            by = By.CSS_SELECTOR<br/>            value = &quot;.%s&quot; % value<br/>        elif by == By.NAME:<br/>            by = By.CSS_SELECTOR<br/>            value = &#x27;[name=&quot;%s&quot;]&#x27; % value<br/>    <br/>&gt;       return self.execute(Command.FIND_ELEMENT, {<br/>            &#x27;using&#x27;: by,<br/>            &#x27;value&#x27;: value})[&#x27;value&#x27;]<br/><br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:1244: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;50917e673a690e17b327a22b30cac67c&quot;)&gt;, driver_command = &#x27;findElement&#x27;, params = {&#x27;using&#x27;: &#x27;link text&#x27;, &#x27;value&#x27;: &#x27;read more...&#x27;}<br/><br/>    def execute(self, driver_command: str, params: dict = None) -&gt; dict:<br/>        &quot;&quot;&quot;<br/>        Sends a command to be executed by a command.CommandExecutor.<br/>    <br/>        :Args:<br/>         - driver_command: The name of the command to execute as a string.<br/>         - params: A dictionary of named parameters to send with the command.<br/>    <br/>        :Returns:<br/>          The command&#x27;s JSON response loaded into a dictionary object.<br/>        &quot;&quot;&quot;<br/>        if self.session_id:<br/>            if not params:<br/>                params = {&#x27;sessionId&#x27;: self.session_id}<br/>            elif &#x27;sessionId&#x27; not in params:<br/>                params[&#x27;sessionId&#x27;] = self.session_id<br/>    <br/>        params = self._wrap_value(params)<br/>        response = self.command_executor.execute(driver_command, params)<br/>        if response:<br/>&gt;           self.error_handler.check_response(response)<br/><br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:424: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001FD96103640&gt;<br/>response = {&#x27;status&#x27;: 404, &#x27;value&#x27;: &#x27;{&quot;value&quot;:{&quot;error&quot;:&quot;no such element&quot;,&quot;message&quot;:&quot;no such element: Unable to locate element: {\...\n\\tRtlGetAppContainerNamedObjectPath [0x77CF7A9E+286]\\n\\tRtlGetAppContainerNamedObjectPath [0x77CF7A6E+238]\\n&quot;}}&#x27;}<br/><br/>    def check_response(self, response: Dict[str, Any]) -&gt; None:<br/>        &quot;&quot;&quot;<br/>        Checks that a JSON response from the WebDriver does not have an error.<br/>    <br/>        :Args:<br/>         - response - The JSON response from the WebDriver server as a dictionary<br/>           object.<br/>    <br/>        :Raises: If the response contains an error message.<br/>        &quot;&quot;&quot;<br/>        status = response.get(&#x27;status&#x27;, None)<br/>        if not status or status == ErrorCode.SUCCESS:<br/>            return<br/>        value = None<br/>        message = response.get(&quot;message&quot;, &quot;&quot;)<br/>        screen: str = response.get(&quot;screen&quot;, &quot;&quot;)<br/>        stacktrace = None<br/>        if isinstance(status, int):<br/>            value_json = response.get(&#x27;value&#x27;, None)<br/>            if value_json and isinstance(value_json, str):<br/>                import json<br/>                try:<br/>                    value = json.loads(value_json)<br/>                    if len(value.keys()) == 1:<br/>                        value = value[&#x27;value&#x27;]<br/>                    status = value.get(&#x27;error&#x27;, None)<br/>                    if not status:<br/>                        status = value.get(&quot;status&quot;, ErrorCode.UNKNOWN_ERROR)<br/>                        message = value.get(&quot;value&quot;) or value.get(&quot;message&quot;)<br/>                        if not isinstance(message, str):<br/>                            value = message<br/>                            message = message.get(&#x27;message&#x27;)<br/>                    else:<br/>                        message = value.get(&#x27;message&#x27;, None)<br/>                except ValueError:<br/>                    pass<br/>    <br/>        exception_class: Type[WebDriverException]<br/>        if status in ErrorCode.NO_SUCH_ELEMENT:<br/>            exception_class = NoSuchElementException<br/>        elif status in ErrorCode.NO_SUCH_FRAME:<br/>            exception_class = NoSuchFrameException<br/>        elif status in ErrorCode.NO_SUCH_SHADOW_ROOT:<br/>            exception_class = NoSuchShadowRootException<br/>        elif status in ErrorCode.NO_SUCH_WINDOW:<br/>            exception_class = NoSuchWindowException<br/>        elif status in ErrorCode.STALE_ELEMENT_REFERENCE:<br/>            exception_class = StaleElementReferenceException<br/>        elif status in ErrorCode.ELEMENT_NOT_VISIBLE:<br/>            exception_class = ElementNotVisibleException<br/>        elif status in ErrorCode.INVALID_ELEMENT_STATE:<br/>            exception_class = InvalidElementStateException<br/>        elif status in ErrorCode.INVALID_SELECTOR \<br/>                or status in ErrorCode.INVALID_XPATH_SELECTOR \<br/>                or status in ErrorCode.INVALID_XPATH_SELECTOR_RETURN_TYPER:<br/>            exception_class = InvalidSelectorException<br/>        elif status in ErrorCode.ELEMENT_IS_NOT_SELECTABLE:<br/>            exception_class = ElementNotSelectableException<br/>        elif status in ErrorCode.ELEMENT_NOT_INTERACTABLE:<br/>            exception_class = ElementNotInteractableException<br/>        elif status in ErrorCode.INVALID_COOKIE_DOMAIN:<br/>            exception_class = InvalidCookieDomainException<br/>        elif status in ErrorCode.UNABLE_TO_SET_COOKIE:<br/>            exception_class = UnableToSetCookieException<br/>        elif status in ErrorCode.TIMEOUT:<br/>            exception_class = TimeoutException<br/>        elif status in ErrorCode.SCRIPT_TIMEOUT:<br/>            exception_class = TimeoutException<br/>        elif status in ErrorCode.UNKNOWN_ERROR:<br/>            exception_class = WebDriverException<br/>        elif status in ErrorCode.UNEXPECTED_ALERT_OPEN:<br/>            exception_class = UnexpectedAlertPresentException<br/>        elif status in ErrorCode.NO_ALERT_OPEN:<br/>            exception_class = NoAlertPresentException<br/>        elif status in ErrorCode.IME_NOT_AVAILABLE:<br/>            exception_class = ImeNotAvailableException<br/>        elif status in ErrorCode.IME_ENGINE_ACTIVATION_FAILED:<br/>            exception_class = ImeActivationFailedException<br/>        elif status in ErrorCode.MOVE_TARGET_OUT_OF_BOUNDS:<br/>            exception_class = MoveTargetOutOfBoundsException<br/>        elif status in ErrorCode.JAVASCRIPT_ERROR:<br/>            exception_class = JavascriptException<br/>        elif status in ErrorCode.SESSION_NOT_CREATED:<br/>            exception_class = SessionNotCreatedException<br/>        elif status in ErrorCode.INVALID_ARGUMENT:<br/>            exception_class = InvalidArgumentException<br/>        elif status in ErrorCode.NO_SUCH_COOKIE:<br/>            exception_class = NoSuchCookieException<br/>        elif status in ErrorCode.UNABLE_TO_CAPTURE_SCREEN:<br/>            exception_class = ScreenshotException<br/>        elif status in ErrorCode.ELEMENT_CLICK_INTERCEPTED:<br/>            exception_class = ElementClickInterceptedException<br/>        elif status in ErrorCode.INSECURE_CERTIFICATE:<br/>            exception_class = InsecureCertificateException<br/>        elif status in ErrorCode.INVALID_COORDINATES:<br/>            exception_class = InvalidCoordinatesException<br/>        elif status in ErrorCode.INVALID_SESSION_ID:<br/>            exception_class = InvalidSessionIdException<br/>        elif status in ErrorCode.UNKNOWN_METHOD:<br/>            exception_class = UnknownMethodException<br/>        else:<br/>            exception_class = WebDriverException<br/>        if not value:<br/>            value = response[&#x27;value&#x27;]<br/>        if isinstance(value, str):<br/>            raise exception_class(value)<br/>        if message == &quot;&quot; and &#x27;message&#x27; in value:<br/>            message = value[&#x27;message&#x27;]<br/>    <br/>        screen = None  # type: ignore[assignment]<br/>        if &#x27;screen&#x27; in value:<br/>            screen = value[&#x27;screen&#x27;]<br/>    <br/>        stacktrace = None<br/>        st_value = value.get(&#x27;stackTrace&#x27;) or value.get(&#x27;stacktrace&#x27;)<br/>        if st_value:<br/>            if isinstance(st_value, str):<br/>                stacktrace = st_value.split(&#x27;\n&#x27;)<br/>            else:<br/>                stacktrace = []<br/>                try:<br/>                    for frame in st_value:<br/>                        line = self._value_or_default(frame, &#x27;lineNumber&#x27;, &#x27;&#x27;)<br/>                        file = self._value_or_default(frame, &#x27;fileName&#x27;, &#x27;&lt;anonymous&gt;&#x27;)<br/>                        if line:<br/>                            file = &quot;%s:%s&quot; % (file, line)<br/>                        meth = self._value_or_default(frame, &#x27;methodName&#x27;, &#x27;&lt;anonymous&gt;&#x27;)<br/>                        if &#x27;className&#x27; in frame:<br/>                            meth = &quot;%s.%s&quot; % (frame[&#x27;className&#x27;], meth)<br/>                        msg = &quot;    at %s (%s)&quot;<br/>                        msg = msg % (meth, file)<br/>                        stacktrace.append(msg)<br/>                except TypeError:<br/>                    pass<br/>        if exception_class == UnexpectedAlertPresentException:<br/>            alert_text = None<br/>            if &#x27;data&#x27; in value:<br/>                alert_text = value[&#x27;data&#x27;].get(&#x27;text&#x27;)<br/>            elif &#x27;alert&#x27; in value:<br/>                alert_text = value[&#x27;alert&#x27;].get(&#x27;text&#x27;)<br/>            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here<br/>&gt;       raise exception_class(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;link text&quot;,&quot;selector&quot;:&quot;read more...&quot;}</span><br/><span class="error">E         (Session info: chrome=98.0.4758.82)</span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       Backtrace:</span><br/><span class="error">E       	Ordinal0 [0x0059FDC3+2555331]</span><br/><span class="error">E       	Ordinal0 [0x005377F1+2127857]</span><br/><span class="error">E       	Ordinal0 [0x00432E08+1060360]</span><br/><span class="error">E       	Ordinal0 [0x0045E49E+1238174]</span><br/><span class="error">E       	Ordinal0 [0x0045E69B+1238683]</span><br/><span class="error">E       	Ordinal0 [0x00489252+1413714]</span><br/><span class="error">E       	Ordinal0 [0x00477B54+1342292]</span><br/><span class="error">E       	Ordinal0 [0x004875FA+1406458]</span><br/><span class="error">E       	Ordinal0 [0x00477976+1341814]</span><br/><span class="error">E       	Ordinal0 [0x004536B6+1193654]</span><br/><span class="error">E       	Ordinal0 [0x00454546+1197382]</span><br/><span class="error">E       	GetHandleVerifier [0x00739622+1619522]</span><br/><span class="error">E       	GetHandleVerifier [0x007E882C+2336844]</span><br/><span class="error">E       	GetHandleVerifier [0x006323E1+541697]</span><br/><span class="error">E       	GetHandleVerifier [0x00631443+537699]</span><br/><span class="error">E       	Ordinal0 [0x0053D18E+2150798]</span><br/><span class="error">E       	Ordinal0 [0x00541518+2168088]</span><br/><span class="error">E       	Ordinal0 [0x00541660+2168416]</span><br/><span class="error">E       	Ordinal0 [0x0054B330+2208560]</span><br/><span class="error">E       	BaseThreadInitThunk [0x7798FA29+25]</span><br/><span class="error">E       	RtlGetAppContainerNamedObjectPath [0x77CF7A9E+286]</span><br/><span class="error">E       	RtlGetAppContainerNamedObjectPath [0x77CF7A6E+238]</span><br/><br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\errorhandler.py:247: NoSuchElementException<br/><br/>During handling of the above exception, another exception occurred:<br/><br/>self = &lt;tests.test_e2e.TestOne object at 0x000001FD961038B0&gt;<br/><br/>    def test_e2e(self):<br/>        log = self.getLogger()<br/>        action = ActionChains(self.driver)<br/>        wait = WebDriverWait(self.driver, 20)<br/>    <br/>        tabs = self.driver.window_handles<br/>        self.driver.switch_to.window(tabs[1])<br/>        sf_HomePage = SalesForceHomePage(self.driver)<br/>    <br/>        try:<br/>            sf_HomePage.nav_console_home().click()<br/>        except Exception as e:<br/>            sf_HomePage.login().click()<br/>            self.driver.get(&quot;https://optimatax--develop.lightning.force.com/lightning/page/home&quot;)<br/>            log.info(e)<br/>        try:<br/>            sf_HomePage.create_data_button().click()<br/>            log.info(&quot;In the Salesforce sales console, on the home page, selected &#x27;create data&#x27;&quot;)<br/>        except Exception as e:<br/>            alert = self.driver.switch_to.alert()<br/>            alert.accept()<br/>            log.info(e)<br/>    <br/>        clientInformation = self.getTempEmail()<br/>        self.driver.switch_to.window(tabs[1])<br/>        sf_HomePage.create_data_email().send_keys(clientInformation[&quot;email_address&quot;])<br/>        sf_HomePage.create_data_name().send_keys(clientInformation[&quot;first_name&quot;] + &quot; &quot; + clientInformation[&quot;last_name&quot;])<br/>    <br/>        leadPage = sf_HomePage.create_data_submit()<br/>        log.info(&quot;Filled out the required fields: Name Email set &#x27;stage&#x27; drop-down field as &#x27;lead&#x27; selected &#x27;create data&#x27;&quot;)<br/>        button = leadPage.phone_edit_pencil()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, button)<br/>    <br/>    <br/>        tel_css_selector = leadPage.phone_number().get_attribute(&quot;value&quot;)<br/>        leadPage.phone_number().clear()<br/>        save = leadPage.contact_details_save()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, save)<br/>        log.info(&quot;Deleted primary phone field from the created lead and selected &#x27;save&#x27;&quot;)<br/>    <br/>        wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, &quot;h3[title=&#x27;Phone&#x27;]&quot;)))<br/>        log.info(&quot;Under &#x27;lead conversion readiness&#x27; window–&#x27;convert&#x27; button is not visible and shows phone&quot;<br/>                 &quot; field that needs to be entered in order to convert&quot;)<br/>        self.driver.execute_script(&quot;window.scrollTo(0,0);&quot;)<br/>    <br/>        time.sleep(1)<br/>        self.driver.refresh()<br/>    <br/>        wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, &quot;button[title=&#x27;Edit Phone, Primary&#x27;] lightning-primitive-icon&quot;)))<br/>        edit_pencil = leadPage.phone_edit_pencil()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, edit_pencil)<br/>        self.driver.execute_script(&quot;window.scrollTo(0,0);&quot;)<br/>    <br/>        leadPage.phone_number().send_keys(tel_css_selector)<br/>        secondSave = leadPage.contact_details_save()<br/>        action.move_to_element(secondSave).perform()<br/>        action.click(secondSave).perform()<br/>        log.info(&quot;Entered all required fields and selected &#x27;save&#x27;&quot;)<br/>    <br/>    <br/>        convertButton = leadPage.convert_button()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, convertButton)<br/>        log.info(&quot;Selected &#x27;convert&#x27; in &#x27;lead conversion readiness&#x27; window&quot;)<br/>    <br/>        invOpportunity = leadPage.lead_conversion_save()<br/>        log.info(&quot;Select &#x27;save&#x27; in &#x27;lead conversion&#x27; modal&quot;)<br/>        #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM<br/>        wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>        time.sleep(2)<br/>        self.driver.refresh()<br/>        wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>        payment_schedule_button = invOpportunity.payment_schedule_button()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, payment_schedule_button)<br/>        log.info(&quot;In the investigation opportunity, selected &#x27;create payment schedules&#x27;&quot;)<br/>    <br/>    <br/>        #time.sleep(5)<br/>        try:<br/>            self.selectDate()<br/>            invOpportunity.iframe_payment_save_button().click()<br/>            self.driver.switch_to.default_content()<br/>            log.info(&quot;Selected payment date &lt;= 30 days and selected &#x27;save&#x27;&quot;)<br/>            wait.until(expected_conditions.invisibility_of_element((By.XPATH, &quot;//h2[contains(text(), &#x27;Create Payment Schedule&#x27;)]&quot;)))<br/>        except:<br/>            log.warning(&quot;A modal appeared with no fields so will refresh and try again&quot;)<br/>            self.driver.refresh()<br/>            log.info(&quot;Refreshed successfully&quot;)<br/>            wait.until(expected_conditions.presence_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Create Pmt Schedules&#x27;)]&quot;)))<br/>            payment_schedule_button = invOpportunity.payment_schedule_button()<br/>            self.driver.execute_script(&quot;arguments[0].click();&quot;, payment_schedule_button)<br/>            log.warning(&quot;In the investigation opportunity, selected &#x27;create payment schedules&#x27;&quot;)<br/>            wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, &quot;div[id=&#x27;modal-content-id-1&#x27;] iframe&quot;)))<br/>            wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, &quot;input[type=&#x27;date&#x27;]&quot;)))<br/>            self.selectDate()<br/>            invOpportunity.iframe_payment_save_button().click()<br/>            log.info(&quot;Selected payment date &lt;= 30 days and selected &#x27;save&#x27;&quot;)<br/>    <br/>    <br/>        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, &quot;//ul[@role=&#x27;tablist&#x27;]/li[7]/a&quot;)))<br/>        manage_docs_element = invOpportunity.manage_docs_tab()<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, manage_docs_element)<br/>    <br/>        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, &quot;//div[@class=&#x27;content iframe-parent&#x27;]/iframe&quot;)))<br/>        #putting sleep here because error that iframe cannot be found is thrown<br/>        time.sleep(1)<br/>        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, &quot;//iframe[@id=&#x27;manage-forms&#x27;]&quot;)))<br/>        time.sleep(2)<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;i[class =&#x27;fa fa-rocket&#x27;]&quot;).click()<br/>        wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, &quot;button[class=&#x27;btn btn-success send-email&#x27;]&quot;)))<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;button[class=&#x27;btn btn-success send-email&#x27;]&quot;).click()<br/>        tabs = self.driver.window_handles<br/>        self.driver.switch_to.window(tabs[2])<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;a[title=&#x27;Refresh this page&#x27;]&quot;).click()<br/>    <br/>        self.driver.switch_to.default_content()<br/>        self.driver.find_element(By.XPATH, &quot;//td[contains(text(),&#x27;Welcome to Optima Tax Relief&#x27;)]&quot;).click()<br/>        self.driver.switch_to.frame(&quot;iframeMail&quot;)<br/>        self.driver.find_element(By.LINK_TEXT, &quot;Create Account →&quot;).click()<br/>        time.sleep(1)<br/>    <br/>    <br/>        portal = self.driver.window_handles[3]<br/>        self.driver.switch_to.window(portal)<br/>        self.driver.find_element_by_name(&quot;password&quot;).send_keys(&quot;123456&quot;)<br/>        self.driver.find_element_by_name(&quot;password_confirmation&quot;).send_keys(&quot;123456&quot;)<br/>        self.driver.find_element(By.CSS_SELECTOR, &quot;button[id=&#x27;login-btn&#x27;&quot;).click()<br/>        self.driver.find_element(By.XPATH, &quot;//button[contains(text(), &#x27;Acknowledge&#x27;)]&quot;).click()<br/>        wait.until(expected_conditions.visibility_of_element_located((By.XPATH, &quot;//button[contains(text(), &#x27;Started&#x27;)]&quot;)))<br/>        self.driver.find_element(By.XPATH, &quot;//button[contains(text(), &#x27;Started&#x27;)]&quot;).click()<br/>        self.driver.find_element(By.LINK_TEXT, &quot;I Agree&quot;).click()<br/>    <br/>        canvas = self.driver.find_element(By.CSS_SELECTOR, &quot;div[class*=&#x27;pad--body&#x27;] canvas&quot;)<br/>        action.click_and_hold(canvas) \<br/>            .move_by_offset(-10, -15) \<br/>            .move_by_offset(20, 32) \<br/>            .move_by_offset(10, 25) \<br/>            .release()<br/>        action.perform()<br/>        submit_button = self.driver.find_element(By.XPATH, &quot;//button[contains(text(),&#x27;Submit&#x27;)]&quot;)<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, submit_button)<br/>    <br/>        ssn = self.driver.find_element(By.CSS_SELECTOR, &quot;input[name=&#x27;masked_tax_identification_number&#x27;]&quot;)<br/>        ssn.send_keys(&quot;123456789&quot;)<br/>        dob_dropdowns_elements = self.driver.find_elements(By.CSS_SELECTOR, &quot;select[name*=&#x27;birth&#x27;]&quot;)<br/>        for dob in dob_dropdowns_elements:<br/>            date_select = Select(dob)<br/>            date_select.select_by_index(2)<br/>        verify_button = self.driver.find_element(By.CSS_SELECTOR, &quot;button[id=&#x27;show-confirmation-modal&#x27;]&quot;)<br/>        self.driver.execute_script(&quot;arguments[0].click();&quot;, verify_button)<br/>        self.driver.find_element(By.CSS_SELECTOR,&quot;button[id=&#x27;forms-nav-verify&#x27;]&quot;).click()<br/>    <br/>        for i in range(4):<br/>            try:<br/>                self.driver.find_element(By.PARTIAL_LINK_TEXT, &quot;View&quot;).click()<br/>                self.driver.find_element(By.LINK_TEXT, &quot;read more...&quot;).click()<br/>                program_outline = self.driver.find_elements(By.CSS_SELECTOR, &quot;div[class=&#x27;more&#x27;] p&quot;)<br/>                for p in program_outline:<br/>                    text = p.text<br/>                    assert text is not None, &quot;Program outline may be missing contents please login to check.&quot;<br/>                self.driver.find_element(By.CSS_SELECTOR, &quot;button[class=&#x27;close&#x27;]&quot;).click()<br/>                # self.driver.execute_script(&quot;argument[0].scrollIntoView();&quot;, close_element)<br/>                # close_element.click()<br/>                continue_button_location = self.driver.find_element(By.CSS_SELECTOR, &quot;[class*=&#x27;btn-success&#x27;]&quot;)<br/>                self.driver.execute_script(&quot;arguments[0].click();&quot;, continue_button_location)<br/>            except:<br/>&gt;               self.driver.find_element(By.CSS_SELECTOR, &quot;button[class=&#x27;close&#x27;]&quot;).click()<br/><br/>tests\test_e2e.py:182: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\webelement.py:81: in click<br/>    self._execute(Command.CLICK_ELEMENT)<br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\webelement.py:710: in _execute<br/>    return self._parent.execute(command, params)<br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:424: in execute<br/>    self.error_handler.check_response(response)<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001FD96103640&gt;<br/>response = {&#x27;status&#x27;: 400, &#x27;value&#x27;: &#x27;{&quot;value&quot;:{&quot;error&quot;:&quot;element not interactable&quot;,&quot;message&quot;:&quot;element not interactable\\n  (Sessio...\n\\tRtlGetAppContainerNamedObjectPath [0x77CF7A9E+286]\\n\\tRtlGetAppContainerNamedObjectPath [0x77CF7A6E+238]\\n&quot;}}&#x27;}<br/><br/>    def check_response(self, response: Dict[str, Any]) -&gt; None:<br/>        &quot;&quot;&quot;<br/>        Checks that a JSON response from the WebDriver does not have an error.<br/>    <br/>        :Args:<br/>         - response - The JSON response from the WebDriver server as a dictionary<br/>           object.<br/>    <br/>        :Raises: If the response contains an error message.<br/>        &quot;&quot;&quot;<br/>        status = response.get(&#x27;status&#x27;, None)<br/>        if not status or status == ErrorCode.SUCCESS:<br/>            return<br/>        value = None<br/>        message = response.get(&quot;message&quot;, &quot;&quot;)<br/>        screen: str = response.get(&quot;screen&quot;, &quot;&quot;)<br/>        stacktrace = None<br/>        if isinstance(status, int):<br/>            value_json = response.get(&#x27;value&#x27;, None)<br/>            if value_json and isinstance(value_json, str):<br/>                import json<br/>                try:<br/>                    value = json.loads(value_json)<br/>                    if len(value.keys()) == 1:<br/>                        value = value[&#x27;value&#x27;]<br/>                    status = value.get(&#x27;error&#x27;, None)<br/>                    if not status:<br/>                        status = value.get(&quot;status&quot;, ErrorCode.UNKNOWN_ERROR)<br/>                        message = value.get(&quot;value&quot;) or value.get(&quot;message&quot;)<br/>                        if not isinstance(message, str):<br/>                            value = message<br/>                            message = message.get(&#x27;message&#x27;)<br/>                    else:<br/>                        message = value.get(&#x27;message&#x27;, None)<br/>                except ValueError:<br/>                    pass<br/>    <br/>        exception_class: Type[WebDriverException]<br/>        if status in ErrorCode.NO_SUCH_ELEMENT:<br/>            exception_class = NoSuchElementException<br/>        elif status in ErrorCode.NO_SUCH_FRAME:<br/>            exception_class = NoSuchFrameException<br/>        elif status in ErrorCode.NO_SUCH_SHADOW_ROOT:<br/>            exception_class = NoSuchShadowRootException<br/>        elif status in ErrorCode.NO_SUCH_WINDOW:<br/>            exception_class = NoSuchWindowException<br/>        elif status in ErrorCode.STALE_ELEMENT_REFERENCE:<br/>            exception_class = StaleElementReferenceException<br/>        elif status in ErrorCode.ELEMENT_NOT_VISIBLE:<br/>            exception_class = ElementNotVisibleException<br/>        elif status in ErrorCode.INVALID_ELEMENT_STATE:<br/>            exception_class = InvalidElementStateException<br/>        elif status in ErrorCode.INVALID_SELECTOR \<br/>                or status in ErrorCode.INVALID_XPATH_SELECTOR \<br/>                or status in ErrorCode.INVALID_XPATH_SELECTOR_RETURN_TYPER:<br/>            exception_class = InvalidSelectorException<br/>        elif status in ErrorCode.ELEMENT_IS_NOT_SELECTABLE:<br/>            exception_class = ElementNotSelectableException<br/>        elif status in ErrorCode.ELEMENT_NOT_INTERACTABLE:<br/>            exception_class = ElementNotInteractableException<br/>        elif status in ErrorCode.INVALID_COOKIE_DOMAIN:<br/>            exception_class = InvalidCookieDomainException<br/>        elif status in ErrorCode.UNABLE_TO_SET_COOKIE:<br/>            exception_class = UnableToSetCookieException<br/>        elif status in ErrorCode.TIMEOUT:<br/>            exception_class = TimeoutException<br/>        elif status in ErrorCode.SCRIPT_TIMEOUT:<br/>            exception_class = TimeoutException<br/>        elif status in ErrorCode.UNKNOWN_ERROR:<br/>            exception_class = WebDriverException<br/>        elif status in ErrorCode.UNEXPECTED_ALERT_OPEN:<br/>            exception_class = UnexpectedAlertPresentException<br/>        elif status in ErrorCode.NO_ALERT_OPEN:<br/>            exception_class = NoAlertPresentException<br/>        elif status in ErrorCode.IME_NOT_AVAILABLE:<br/>            exception_class = ImeNotAvailableException<br/>        elif status in ErrorCode.IME_ENGINE_ACTIVATION_FAILED:<br/>            exception_class = ImeActivationFailedException<br/>        elif status in ErrorCode.MOVE_TARGET_OUT_OF_BOUNDS:<br/>            exception_class = MoveTargetOutOfBoundsException<br/>        elif status in ErrorCode.JAVASCRIPT_ERROR:<br/>            exception_class = JavascriptException<br/>        elif status in ErrorCode.SESSION_NOT_CREATED:<br/>            exception_class = SessionNotCreatedException<br/>        elif status in ErrorCode.INVALID_ARGUMENT:<br/>            exception_class = InvalidArgumentException<br/>        elif status in ErrorCode.NO_SUCH_COOKIE:<br/>            exception_class = NoSuchCookieException<br/>        elif status in ErrorCode.UNABLE_TO_CAPTURE_SCREEN:<br/>            exception_class = ScreenshotException<br/>        elif status in ErrorCode.ELEMENT_CLICK_INTERCEPTED:<br/>            exception_class = ElementClickInterceptedException<br/>        elif status in ErrorCode.INSECURE_CERTIFICATE:<br/>            exception_class = InsecureCertificateException<br/>        elif status in ErrorCode.INVALID_COORDINATES:<br/>            exception_class = InvalidCoordinatesException<br/>        elif status in ErrorCode.INVALID_SESSION_ID:<br/>            exception_class = InvalidSessionIdException<br/>        elif status in ErrorCode.UNKNOWN_METHOD:<br/>            exception_class = UnknownMethodException<br/>        else:<br/>            exception_class = WebDriverException<br/>        if not value:<br/>            value = response[&#x27;value&#x27;]<br/>        if isinstance(value, str):<br/>            raise exception_class(value)<br/>        if message == &quot;&quot; and &#x27;message&#x27; in value:<br/>            message = value[&#x27;message&#x27;]<br/>    <br/>        screen = None  # type: ignore[assignment]<br/>        if &#x27;screen&#x27; in value:<br/>            screen = value[&#x27;screen&#x27;]<br/>    <br/>        stacktrace = None<br/>        st_value = value.get(&#x27;stackTrace&#x27;) or value.get(&#x27;stacktrace&#x27;)<br/>        if st_value:<br/>            if isinstance(st_value, str):<br/>                stacktrace = st_value.split(&#x27;\n&#x27;)<br/>            else:<br/>                stacktrace = []<br/>                try:<br/>                    for frame in st_value:<br/>                        line = self._value_or_default(frame, &#x27;lineNumber&#x27;, &#x27;&#x27;)<br/>                        file = self._value_or_default(frame, &#x27;fileName&#x27;, &#x27;&lt;anonymous&gt;&#x27;)<br/>                        if line:<br/>                            file = &quot;%s:%s&quot; % (file, line)<br/>                        meth = self._value_or_default(frame, &#x27;methodName&#x27;, &#x27;&lt;anonymous&gt;&#x27;)<br/>                        if &#x27;className&#x27; in frame:<br/>                            meth = &quot;%s.%s&quot; % (frame[&#x27;className&#x27;], meth)<br/>                        msg = &quot;    at %s (%s)&quot;<br/>                        msg = msg % (meth, file)<br/>                        stacktrace.append(msg)<br/>                except TypeError:<br/>                    pass<br/>        if exception_class == UnexpectedAlertPresentException:<br/>            alert_text = None<br/>            if &#x27;data&#x27; in value:<br/>                alert_text = value[&#x27;data&#x27;].get(&#x27;text&#x27;)<br/>            elif &#x27;alert&#x27; in value:<br/>                alert_text = value[&#x27;alert&#x27;].get(&#x27;text&#x27;)<br/>            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here<br/>&gt;       raise exception_class(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.ElementNotInteractableException: Message: element not interactable</span><br/><span class="error">E         (Session info: chrome=98.0.4758.82)</span><br/><span class="error">E       Stacktrace:</span><br/><span class="error">E       Backtrace:</span><br/><span class="error">E       	Ordinal0 [0x0059FDC3+2555331]</span><br/><span class="error">E       	Ordinal0 [0x005377F1+2127857]</span><br/><span class="error">E       	Ordinal0 [0x00432CD0+1060048]</span><br/><span class="error">E       	Ordinal0 [0x0045F3AE+1242030]</span><br/><span class="error">E       	Ordinal0 [0x00454FB3+1200051]</span><br/><span class="error">E       	Ordinal0 [0x00477B0C+1342220]</span><br/><span class="error">E       	Ordinal0 [0x00454984+1198468]</span><br/><span class="error">E       	Ordinal0 [0x00477C14+1342484]</span><br/><span class="error">E       	Ordinal0 [0x004875FA+1406458]</span><br/><span class="error">E       	Ordinal0 [0x00477976+1341814]</span><br/><span class="error">E       	Ordinal0 [0x004536B6+1193654]</span><br/><span class="error">E       	Ordinal0 [0x00454546+1197382]</span><br/><span class="error">E       	GetHandleVerifier [0x00739622+1619522]</span><br/><span class="error">E       	GetHandleVerifier [0x007E882C+2336844]</span><br/><span class="error">E       	GetHandleVerifier [0x006323E1+541697]</span><br/><span class="error">E       	GetHandleVerifier [0x00631443+537699]</span><br/><span class="error">E       	Ordinal0 [0x0053D18E+2150798]</span><br/><span class="error">E       	Ordinal0 [0x00541518+2168088]</span><br/><span class="error">E       	Ordinal0 [0x00541660+2168416]</span><br/><span class="error">E       	Ordinal0 [0x0054B330+2208560]</span><br/><span class="error">E       	BaseThreadInitThunk [0x7798FA29+25]</span><br/><span class="error">E       	RtlGetAppContainerNamedObjectPath [0x77CF7A9E+286]</span><br/><span class="error">E       	RtlGetAppContainerNamedObjectPath [0x77CF7A6E+238]</span><br/><br/>C:\Python39\lib\site-packages\selenium\webdriver\remote\errorhandler.py:247: ElementNotInteractableException<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     test_e2e:test_e2e.py:34 In the Salesforce sales console, on the home page, selected &#x27;create data&#x27;
+INFO     test_e2e:test_e2e.py:46 Filled out the required fields: Name Email set &#x27;stage&#x27; drop-down field as &#x27;lead&#x27; selected &#x27;create data&#x27;
+INFO     test_e2e:test_e2e.py:55 Deleted primary phone field from the created lead and selected &#x27;save&#x27;
+INFO     test_e2e:test_e2e.py:58 Under &#x27;lead conversion readiness&#x27; window–&#x27;convert&#x27; button is not visible and shows phone field that needs to be entered in order to convert
+INFO     test_e2e:test_e2e.py:74 Entered all required fields and selected &#x27;save&#x27;
+INFO     test_e2e:test_e2e.py:79 Selected &#x27;convert&#x27; in &#x27;lead conversion readiness&#x27; window
+INFO     test_e2e:test_e2e.py:82 Select &#x27;save&#x27; in &#x27;lead conversion&#x27; modal
+INFO     test_e2e:test_e2e.py:90 In the investigation opportunity, selected &#x27;create payment schedules&#x27;
+INFO     test_e2e:test_e2e.py:98 Selected payment date &lt;= 30 days and selected &#x27;save&#x27;<br/></div></td></tr></tbody></table></body></html>

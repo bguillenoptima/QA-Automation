@@ -111,8 +111,9 @@ class TestOne(BaseClass):
             self.driver.switch_to.default_content()
             log.info("Selected payment date <= 30 days and selected 'save'")
 
-
-        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
+        # element is either a locator (text) or an WebElement
+        self.checkClickablity(invOpportunity.manage_docs_tab())
+        #wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
         manage_docs_element = invOpportunity.manage_docs_tab()
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
 
