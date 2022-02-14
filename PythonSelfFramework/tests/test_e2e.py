@@ -117,13 +117,13 @@ class TestOne(BaseClass):
         manage_docs_element = invOpportunity.manage_docs_tab()
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
 
-        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//div[@class='content iframe-parent']/iframe")))
+        self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
         #putting sleep here because error that iframe cannot be found is thrown
-        time.sleep(1)
-        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe[@id='manage-forms']")))
-        time.sleep(2)
-        self.driver.find_element(By.CSS_SELECTOR, "i[class ='fa fa-rocket']").click()
-        wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, "button[class='btn btn-success send-email']")))
+        self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
+        self.checkClickablity(invOpportunity.manageDocsStart)
+        invOpportunity.manage_docs_start().click()
+        self.checkClickablity(invOpportunity.sendEmail)
+        #invOpportunity.send_email()
         self.driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-success send-email']").click()
         tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])

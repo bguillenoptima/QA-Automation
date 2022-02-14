@@ -12,6 +12,10 @@ class SalesForceInvOpportunityPage:
     paymentIframe = (By.CSS_SELECTOR, "div[id='modal-content-id-1'] iframe")
     paymentDateSelector = (By.CSS_SELECTOR, "input[type='date']")
     paymentModuleHeader = (By.XPATH, "//h2[contains(text(), 'Create Payment Schedule')]")
+    manageDocsIframeOne = (By.XPATH, "//div[@class='content iframe-parent']/iframe")
+    manageDocsIframeTwo = (By.XPATH, "//iframe[@id='manage-forms']")
+    manageDocsStart = (By.CSS_SELECTOR, "i[class ='fa fa-rocket']")
+    sendEmail = (By.CSS_SELECTOR, "button[class='btn btn-success send-email']")
 
     def payment_schedule_button(self):
         return self.driver.find_element(*SalesForceInvOpportunityPage.paymentScheduleButton)
@@ -30,6 +34,15 @@ class SalesForceInvOpportunityPage:
 
     def payment_date(self):
         return self.driver.find_element(*SalesForceInvOpportunityPage.paymentDateSelector)
+
+    def manage_docs_start(self):
+        return self.driver.find_element(*SalesForceInvOpportunityPage.manageDocsStart)
+
+    def send_email(self):
+        self.driver.find_element(*SalesForceInvOpportunityPage.sendEmail).click()
+
+
+
 
 
 
