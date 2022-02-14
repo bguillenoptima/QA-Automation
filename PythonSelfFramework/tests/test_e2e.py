@@ -113,7 +113,6 @@ class TestOne(BaseClass):
 
         # element is either a locator (text) or an WebElement
         self.checkClickablity(invOpportunity.manage_docs_tab())
-        #wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
         manage_docs_element = invOpportunity.manage_docs_tab()
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
 
@@ -123,11 +122,9 @@ class TestOne(BaseClass):
         self.checkClickablity(invOpportunity.manageDocsStart)
         invOpportunity.manage_docs_start().click()
         self.checkClickablity(invOpportunity.sendEmail)
-        #invOpportunity.send_email()
-        self.driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-success send-email']").click()
+        invOpportunity.send_email()
         tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])
-        #self.driver.find_element(By.CSS_SELECTOR, "a[title='Refresh this page']").click()
 
         self.driver.switch_to.default_content()
         self.driver.find_element(By.XPATH, "//td[contains(text(),'Welcome to Optima Tax Relief')]").click()
@@ -142,8 +139,10 @@ class TestOne(BaseClass):
         self.driver.find_element_by_name("password_confirmation").send_keys("123456")
         self.driver.find_element(By.CSS_SELECTOR, "button[id='login-btn'").click()
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Acknowledge')]").click()
-        wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Started')]")))
+        #wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Started')]")))
+        self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+        self.checkClickablity((By.LINK_TEXT, "I Agree"))
         self.driver.find_element(By.LINK_TEXT, "I Agree").click()
 
         canvas = self.driver.find_element(By.CSS_SELECTOR, "div[class*='pad--body'] canvas")
@@ -162,6 +161,7 @@ class TestOne(BaseClass):
         for dob in dob_dropdowns_elements:
             date_select = Select(dob)
             date_select.select_by_index(2)
+        self.checkVisibility((By.CSS_SELECTOR, "button[id='show-confirmation-modal']"))
         verify_button = self.driver.find_element(By.CSS_SELECTOR, "button[id='show-confirmation-modal']")
         self.driver.execute_script("arguments[0].click();", verify_button)
         self.driver.find_element(By.CSS_SELECTOR,"button[id='forms-nav-verify']").click()

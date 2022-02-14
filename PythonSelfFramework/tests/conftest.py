@@ -53,7 +53,7 @@ def setup(request):
     office_homepage.sf_dev_button().click()
     request.cls.driver = driver
     yield
-    driver.quit()
+    #driver.quit()
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item):
