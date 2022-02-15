@@ -2576,3 +2576,19 @@ Backtrace:
 2022-02-14 23:25:18,075 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
 2022-02-14 23:25:37,628 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
 2022-02-14 23:25:42,994 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-15 10:13:48,406 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-15 10:14:00,313 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-15 10:14:14,375 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-15 10:14:15,797 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-15 10:14:23,258 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-15 10:14:24,476 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-15 10:14:24,510 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-15 10:38:10,263 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-15 10:38:13,212 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-15 10:38:22,375 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-15 10:38:23,654 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-15 10:38:30,147 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-15 10:38:31,268 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-15 10:38:31,292 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-15 10:38:50,905 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-15 10:38:53,997 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'

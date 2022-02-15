@@ -107,6 +107,7 @@ class TestOne(BaseClass):
             invOpportunity.iframe_payment_save_button().click()
             self.driver.switch_to.default_content()
             log.info("Selected payment date <= 30 days and selected 'save'")
+            self.checkInvisibility(invOpportunity.paymentModuleHeader)
 
         # element is either a locator (text) or an WebElement
         self.checkClickablity(invOpportunity.manage_docs_tab())
