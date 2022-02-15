@@ -117,8 +117,11 @@ class TestOne(BaseClass):
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
         self.checkClickablity(invOpportunity.manageDocsStart)
-        invOpportunity.manage_docs_start().click()
+
+        #invOpportunity.manage_docs_start().click()
+        action.click(invOpportunity.manage_docs_start()).perform()
         self.checkClickablity(invOpportunity.sendEmail)
+
         disposableEmail = invOpportunity.send_email()
         tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])
@@ -205,8 +208,7 @@ class TestOne(BaseClass):
         self.driver.switch_to.window(tabs[1])
         self.driver.refresh()
 
-        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a")))
-        manage_docs_element = self.driver.find_element(By.XPATH, "//ul[@role='tablist']/li[7]/a")
+        manage_docs_element = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
         #elf.driver.execute_script("arguments[0].click();", manage_docs_element)
 
         wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
