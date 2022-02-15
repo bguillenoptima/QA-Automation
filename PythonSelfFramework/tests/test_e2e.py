@@ -1,16 +1,13 @@
-import pytest
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 import time
-
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-
 from pageObjects.SfHomePage import SalesForceHomePage
-from pageObjects.SfInvOpportunity import SalesForceInvOpportunityPage
+from selenium.common.exceptions import StaleElementReferenceException
 from utilities.BaseClass import BaseClass
-import datetime
+
 
 
 class TestOne(BaseClass):
@@ -117,31 +114,37 @@ class TestOne(BaseClass):
         self.driver.execute_script("arguments[0].click();", manage_docs_element)
 
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
-        #putting sleep here because error that iframe cannot be found is thrown
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
         self.checkClickablity(invOpportunity.manageDocsStart)
         invOpportunity.manage_docs_start().click()
         self.checkClickablity(invOpportunity.sendEmail)
-        invOpportunity.send_email()
+        disposableEmail = invOpportunity.send_email()
         tabs = self.driver.window_handles
         self.driver.switch_to.window(tabs[2])
 
         self.driver.switch_to.default_content()
-        self.driver.find_element(By.XPATH, "//td[contains(text(),'Welcome to Optima Tax Relief')]").click()
+        disposableEmail.welcome_email().click()
         self.driver.switch_to.frame("iframeMail")
-        self.driver.find_element(By.LINK_TEXT, "Create Account →").click()
+        portalPasswordCreate = disposableEmail.welcome_email_create_link()
         time.sleep(1)
 
 
         portal = self.driver.window_handles[3]
         self.driver.switch_to.window(portal)
-        self.driver.find_element_by_name("password").send_keys("123456")
-        self.driver.find_element_by_name("password_confirmation").send_keys("123456")
+        portalPasswordCreate.portal_password().send_keys("123456")
+        portalPasswordCreate.confirm_password().send_keys("123456")
         self.driver.find_element(By.CSS_SELECTOR, "button[id='login-btn'").click()
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Acknowledge')]").click()
         #wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Started')]")))
-        self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
-        self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+
+        try:
+            self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
+            self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+        except StaleElementReferenceException as Exception:
+            print('StaleElementReferenceException while trying to click start, trying to find element again')
+            self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
+            self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+
         self.checkClickablity((By.LINK_TEXT, "I Agree"))
         self.driver.find_element(By.LINK_TEXT, "I Agree").click()
 
@@ -188,9 +191,9 @@ class TestOne(BaseClass):
 
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Credit or Debit Card')]").click()
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(self.PagesData.pagesData["credit_card_number"])
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys("4111111111111111")
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(self.PagesData.pagesData["client_ssn"])
+        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys("123")
 
         #check confirm payment schedule button because it goes back to the payment page
         for i in range(4):

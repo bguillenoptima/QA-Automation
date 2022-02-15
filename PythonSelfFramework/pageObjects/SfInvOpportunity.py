@@ -1,5 +1,7 @@
 from selenium.webdriver.common.by import By
 
+from pageObjects.DisposableEmailPage import DisposableEmailPage
+
 
 class SalesForceInvOpportunityPage:
 
@@ -40,6 +42,8 @@ class SalesForceInvOpportunityPage:
 
     def send_email(self):
         self.driver.find_element(*SalesForceInvOpportunityPage.sendEmail).click()
+        emailInbox  = DisposableEmailPage(self.driver)
+        return emailInbox
 
 
 
