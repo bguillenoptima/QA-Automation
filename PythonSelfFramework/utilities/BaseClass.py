@@ -36,9 +36,11 @@ class BaseClass:
             # of a page. This does not necessarily mean that the element is visible.
             # locator - used to find the element (by, path)
             # returns the WebElement once it is located
+
     def checkPresence(self, locator):
         element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator)))
         return element
+
     # An Expectation for checking an element is visible and enabled such that you can click it.
         # element is either a locator (text) or an WebElement
         # does not return anything
@@ -82,15 +84,13 @@ class BaseClass:
         self.openTab("disposable_email","https://www.disposablemail.com/")
         emailInbox = DisposableEmailPage(self.driver)
         email_Address = emailInbox.store_email().text
+
         first_name_last_name = email_Address.split(".")
         first_Name = first_name_last_name[0].capitalize()
         parsedLastname = first_name_last_name[1].split("@")
         last_Name = parsedLastname[0].capitalize()
 
-        firstName = first_Name
-        lastName = last_Name
-        email = email_Address
-        clientData = dict(first_name=firstName, last_name=lastName, email_address=email)
+        clientData = dict(first_name=first_Name, last_name=last_Name, email_address=email_Address)
         return clientData
 
     def getDate(self):
@@ -99,7 +99,6 @@ class BaseClass:
         return date
 
     def selectDate(self):
-        #wait = WebDriverWait(self.driver, 20)
         current_time = datetime.datetime.now()
         day = int(current_time.day)
         month = int(current_time.strftime(("%m")))
@@ -112,6 +111,7 @@ class BaseClass:
         action.move_to_element(date_element).perform()
         action.click(date_element).perform()
         action.send_keys(Keys.ARROW_UP).send_keys(Keys.ARROW_LEFT).perform()
+
         for uparrow in range(day):
             action.send_keys(Keys.ARROW_UP).perform()
         action.send_keys(Keys.ARROW_LEFT).perform()
