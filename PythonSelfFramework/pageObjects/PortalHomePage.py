@@ -19,7 +19,7 @@ class PortalHomePage:
         return self.driver.find_element(*PortalHomePage.getStarted)
 
     def portal_agree(self):
-        self.driver(*PortalHomePage.agree).click()
+        self.driver.find_element(*PortalHomePage.agree).click()
         signaturePage = SignaturePage(self.driver)
         return signaturePage
 
