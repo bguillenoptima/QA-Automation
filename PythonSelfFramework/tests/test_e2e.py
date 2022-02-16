@@ -100,11 +100,14 @@ class TestOne(BaseClass):
             self.driver.refresh()
             log.info("Refreshed successfully")
             # checkPresence will return WebElement and check presence
+
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
             log.warning("In the investigation opportunity, selected 'create payment schedules'")
+
             self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
+
             self.driver.switch_to.default_content()
             log.info("Selected payment date <= 30 days and selected 'save'")
             self.checkInvisibility(invOpportunity.paymentModuleHeader)
@@ -129,49 +132,61 @@ class TestOne(BaseClass):
         self.driver.switch_to.default_content()
         disposableEmail.welcome_email().click()
         self.driver.switch_to.frame("iframeMail")
+
         portalPasswordCreate = disposableEmail.welcome_email_create_link()
-        time.sleep(1)
-
-
+        #time.sleep(1)
         portal = self.driver.window_handles[3]
         self.driver.switch_to.window(portal)
         portalPasswordCreate.portal_password().send_keys("123456")
         portalPasswordCreate.confirm_password().send_keys("123456")
-        self.driver.find_element(By.CSS_SELECTOR, "button[id='login-btn'").click()
-        self.driver.find_element(By.XPATH, "//button[contains(text(), 'Acknowledge')]").click()
+        portalHomepage = portalPasswordCreate.create_account()
+        #self.driver.find_element(By.CSS_SELECTOR, "button[id='login-btn'").click()
+        self.checkClickablity(portalHomepage.acknowledge)
+        portalHomepage.portal_acknowledge().click()
+        #self.driver.find_element(By.XPATH, "//button[contains(text(), 'Acknowledge')]").click()
         #wait.until(expected_conditions.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Started')]")))
-
         try:
-            self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
-            self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+            #self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
+            self.checkClickablity(portalHomepage.getStarted)
+            portalHomepage.portal_get_started().click()
+            #self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
         except StaleElementReferenceException as Exception:
             print('StaleElementReferenceException while trying to click start, trying to find element again')
-            self.checkClickablity((By.XPATH, "//button[contains(text(), 'Started')]"))
-            self.driver.find_element(By.XPATH, "//button[contains(text(), 'Started')]").click()
+            self.checkClickablity(portalHomepage.getStarted)
+            portalHomepage.portal_get_started().click()
 
-        self.checkClickablity((By.LINK_TEXT, "I Agree"))
-        self.driver.find_element(By.LINK_TEXT, "I Agree").click()
+        #self.checkClickablity((By.LINK_TEXT, "I Agree"))
+        self.checkClickablity(portalHomepage.agree)
+        #self.driver.find_element(By.LINK_TEXT, "I Agree").click()
+        signaturePage = portalHomepage.portal_agree()
 
-        canvas = self.driver.find_element(By.CSS_SELECTOR, "div[class*='pad--body'] canvas")
+        #canvas = self.driver.find_element(By.CSS_SELECTOR, "div[class*='pad--body'] canvas")
+        canvas = signaturePage.portal_canvas()
         action.click_and_hold(canvas) \
             .move_by_offset(-10, -15) \
             .move_by_offset(20, 32) \
             .move_by_offset(10, 25) \
             .release()
         action.perform()
-        submit_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Submit')]")
-        self.driver.execute_script("arguments[0].click();", submit_button)
+        #submit_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Submit')]")
+        #self.driver.execute_script("arguments[0].click();", submit_button)
+        infoVerificationPage = signaturePage.portal_submit()
 
-        ssn = self.driver.find_element(By.CSS_SELECTOR, "input[name='masked_tax_identification_number']")
-        ssn.send_keys("123456789")
-        dob_dropdowns_elements = self.driver.find_elements(By.CSS_SELECTOR, "select[name*='birth']")
-        for dob in dob_dropdowns_elements:
+        infoVerificationPage.ssn_field().send_keys("123456789")
+        #ssn = self.driver.find_element(By.CSS_SELECTOR, "input[name='masked_tax_identification_number']")
+        #ssn.send_keys("123456789")
+        #dob_dropdowns_elements = self.driver.find_elements(By.CSS_SELECTOR, "select[name*='birth']")
+        dobDropDowns = infoVerificationPage.dob_drop_downs()
+        for dob in dobDropDowns:
             date_select = Select(dob)
             date_select.select_by_index(2)
-        self.checkVisibility((By.CSS_SELECTOR, "button[id='show-confirmation-modal']"))
-        verify_button = self.driver.find_element(By.CSS_SELECTOR, "button[id='show-confirmation-modal']")
-        self.driver.execute_script("arguments[0].click();", verify_button)
-        self.driver.find_element(By.CSS_SELECTOR,"button[id='forms-nav-verify']").click()
+        self.checkVisibility(infoVerificationPage.verify)
+        #self.checkVisibility((By.CSS_SELECTOR, "button[id='show-confirmation-modal']"))
+        #verify_button = self.driver.find_element(By.CSS_SELECTOR, "button[id='show-confirmation-modal']")
+        verifyButton = infoVerificationPage.verify_button()
+        self.driver.execute_script("arguments[0].click();", verifyButton)
+        serviceAgreementPage = infoVerificationPage.confirm_button()
+        #self.driver.find_element(By.CSS_SELECTOR,"button[id='forms-nav-verify']").click()
 
         for i in range(4):
             try:
@@ -221,6 +236,7 @@ class TestOne(BaseClass):
         self.driver.find_element(By.CSS_SELECTOR, "button[id='ready-for-payments-btn']").click()
 
         self.driver.execute_script("window.open('about:blank','admin_portal');")
+        #wait.until(expected_conditions.new_window_is_opened(tabs))
         self.driver.switch_to.window("admin_portal")
         self.driver.get("https://admin-dev.optimatax.com/dashboard")
 

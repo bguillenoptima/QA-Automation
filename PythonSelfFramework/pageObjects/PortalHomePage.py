@@ -1,17 +1,28 @@
 from selenium.webdriver.common.by import By
 
-from pageObjects.LeadPage import LeadPage
+from pageObjects.SignaturePage import SignaturePage
 
 
-class SalesForceHomePage:
+class PortalHomePage:
 
     def __init__(self, driver):
         self.driver = driver
 
-    createDataButton = (By.XPATH, "//div[@class='slds-card__body']/button")
+    acknowledge = (By.XPATH, "//button[contains(text(), 'Acknowledge')]")
+    getStarted = (By.XPATH, "//button[contains(text(), 'Started')]")
+    agree = (By.LINK_TEXT, "I Agree")
 
-    def nav_console_home(self):
-        return self.driver.find_element.click()
+    def portal_acknowledge(self):
+        return self.driver.find_element(*PortalHomePage.acknowledge)
+
+    def portal_get_started(self):
+        return self.driver.find_element(*PortalHomePage.getStarted)
+
+    def portal_agree(self):
+        self.driver(*PortalHomePage.agree).click()
+        signaturePage = SignaturePage(self.driver)
+        return signaturePage
+
 
 
 

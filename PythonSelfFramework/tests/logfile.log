@@ -2619,3 +2619,21 @@ Backtrace:
 2022-02-15 11:12:22,601 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
 2022-02-15 11:12:41,111 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
 2022-02-15 11:12:44,129 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-15 11:47:50,896 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-15 11:47:54,026 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-15 11:48:04,204 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-15 11:48:05,858 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-15 11:48:12,884 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-15 11:48:14,175 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-15 11:48:14,213 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-15 11:48:33,844 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-15 11:48:36,796 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-15 18:01:28,558 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-15 18:01:31,023 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-15 18:01:41,207 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-15 18:01:42,284 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-15 18:01:49,636 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-15 18:01:50,843 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-15 18:01:50,872 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-15 18:02:10,383 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-15 18:02:13,753 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
