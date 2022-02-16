@@ -19,7 +19,6 @@ class TestOne(BaseClass):
         wait = WebDriverWait(self.driver, 20)
         sfLoginPage = O365LoginPages(self.driver)
 
-#       self.driver.switch_to.window(tabs[1])
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
 
@@ -29,6 +28,7 @@ class TestOne(BaseClass):
             sf_HomePage.login().click()
             self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
             log.info(e)
+
         try:
             sf_HomePage.create_data_button().click()
             log.info("In the Salesforce sales console, on the home page, selected 'create data'")

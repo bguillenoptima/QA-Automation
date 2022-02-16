@@ -30,28 +30,7 @@ def setup(request):
 
     driver.implicitly_wait(20)
     driver.get("https://optimatax.lightning.force.com/lightning/page/home")
-    #officeLoginPages = O365LoginPages(driver)
 
-    #officeLoginPages.email_field().send_keys(PagesData.pagesData[0]["tester_email"])
-    #officeLoginPages.next_button().click()
-
-    #time.sleep(1)
-
-    #officeLoginPages.password_field().send_keys(PagesData.pagesData[0]["tester_password"])
-    #officeLoginPages.next_button().click()
-
-    # add twilio logic here
-    #time.sleep(10)
-
-    #officeLoginPages.next_button().click()
-
-    #time.sleep(2)
-
-    #officeLoginPages.next_button().click()
-
-    #office_homepage = O365HomePage(driver)
-    #office_homepage.waffle_icon().click()
-    #office_homepage.sf_dev_button().click()
     parameters = request.param
     request.cls.parameters = parameters
     request.cls.driver = driver
