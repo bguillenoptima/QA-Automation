@@ -17,7 +17,7 @@ fileHandler = logging.FileHandler('logfile.log')
 
 logger.addHandler(fileHandler)  #filehandler object
 
-@pytest.mark.usefixtures("setup", "dataLoad")
+@pytest.mark.usefixtures("setup")
 class BaseClass:
 
     def getLogger(self):

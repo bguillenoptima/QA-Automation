@@ -4,6 +4,8 @@ from selenium.webdriver.support import expected_conditions
 import time
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+
+from pageObjects.O365LoginPages import O365LoginPages
 from pageObjects.SfHomePage import SalesForceHomePage
 from selenium.common.exceptions import StaleElementReferenceException
 from utilities.BaseClass import BaseClass
@@ -15,10 +17,11 @@ class TestOne(BaseClass):
         log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
+        sfLoginPage = O365LoginPages(self.driver)
 
+#       self.driver.switch_to.window(tabs[1])
+        sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
-        self.driver.switch_to.window(tabs[1])
-        sf_HomePage = SalesForceHomePage(self.driver)
 
         try:
             sf_HomePage.nav_console_home().click()
@@ -35,7 +38,7 @@ class TestOne(BaseClass):
             log.info(e)
 
         clientInformation = self.getTempEmail()
-        self.driver.switch_to.window(tabs[1])
+        self.driver.switch_to.window(tabs[0])
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
@@ -125,7 +128,7 @@ class TestOne(BaseClass):
 
         disposableEmail = invOpportunity.send_email()
         tabs = self.driver.window_handles
-        self.driver.switch_to.window(tabs[2])
+        self.driver.switch_to.window(tabs[1])
 
         self.driver.switch_to.default_content()
         disposableEmail.welcome_email().click()
@@ -133,10 +136,10 @@ class TestOne(BaseClass):
 
         portalPasswordCreate = disposableEmail.welcome_email_create_link()
 
-        portal = self.driver.window_handles[3]
+        portal = self.driver.window_handles[2]
         self.driver.switch_to.window(portal)
-        portalPasswordCreate.portal_password().send_keys("123456")
-        portalPasswordCreate.confirm_password().send_keys("123456")
+        portalPasswordCreate.portal_password().send_keys(self.parameters["client_password"])
+        portalPasswordCreate.confirm_password().send_keys(self.parameters["client_password"])
         portalHomepage = portalPasswordCreate.create_account()
 
         self.checkClickablity(portalHomepage.acknowledge)
@@ -162,7 +165,7 @@ class TestOne(BaseClass):
         action.perform()
 
         infoVerificationPage = signaturePage.portal_submit()
-        infoVerificationPage.ssn_field().send_keys("123456789")
+        infoVerificationPage.ssn_field().send_keys(self.parameters["client_ssn"])
         dobDropDowns = infoVerificationPage.dob_drop_downs()
         for dob in dobDropDowns:
             date_select = Select(dob)
@@ -196,9 +199,9 @@ class TestOne(BaseClass):
 
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Credit or Debit Card')]").click()
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys("4111111111111111")
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(self.parameters["credit_card_number"])
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(self.parameters["cvv"])
 
         #check confirm payment schedule button because it goes back to the payment page
         for i in range(4):
@@ -206,7 +209,7 @@ class TestOne(BaseClass):
             continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
             self.driver.execute_script("arguments[0].click();", continue_button_location)
 
-        self.driver.switch_to.window(tabs[1])
+        self.driver.switch_to.window(tabs[0])
         self.driver.refresh()
 
         manage_docs_element = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
@@ -245,7 +248,7 @@ class TestOne(BaseClass):
         except:
             print("Unable to verify alert-success for Payment")
 
-        self.driver.switch_to.window(tabs[1])
+        self.driver.switch_to.window(tabs[0])
 
 
 

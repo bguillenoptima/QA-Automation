@@ -1,13 +1,10 @@
-import time
-
 from selenium import webdriver
 import pytest
 from TestData.PagesData import PagesData
-from pageObjects.O365HomePage import O365HomePage
-from pageObjects.O365LoginPages import O365LoginPages
 
 
 driver = None
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -15,45 +12,51 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="class", params=PagesData.pagesData)
 def setup(request):
     global driver
+
+    options = webdriver.ChromeOptions()
+    options.add_argument("user-data-dir=C:\\Users\\OTRA155\\AppData\\Local\\Google\\Chrome\\User Data")
+    options.add_argument("profile-directory=Profile 1")
     browser_name = request.config.getoption("browser_name")
+
     if browser_name == "chrome":
-        driver = webdriver.Chrome(executable_path="C:\\chromedriver.exe")
+        driver = webdriver.Chrome(executable_path="C:\\chromedriver.exe", chrome_options=options)
     elif browser_name == "firefox":
         driver = webdriver.Firefox(executable_path="C:\\geckodriver.exe")
     elif browser_name == "edge":
         driver = webdriver.Edge(executable_path="C:\\msedgedriver.exe")
-    driver.maximize_window()
+
     driver.implicitly_wait(20)
+    driver.get("https://optimatax.lightning.force.com/lightning/page/home")
+    #officeLoginPages = O365LoginPages(driver)
 
-    driver.get("https://portal.office365.com")
-    officeLoginPages = O365LoginPages(driver)
+    #officeLoginPages.email_field().send_keys(PagesData.pagesData[0]["tester_email"])
+    #officeLoginPages.next_button().click()
 
-    officeLoginPages.email_field().send_keys(PagesData.pagesData[0]["tester_email"])
-    officeLoginPages.next_button().click()
+    #time.sleep(1)
 
-    time.sleep(1)
-
-    officeLoginPages.password_field().send_keys(PagesData.pagesData[0]["tester_password"])
-    officeLoginPages.next_button().click()
+    #officeLoginPages.password_field().send_keys(PagesData.pagesData[0]["tester_password"])
+    #officeLoginPages.next_button().click()
 
     # add twilio logic here
-    time.sleep(10)
+    #time.sleep(10)
 
-    officeLoginPages.next_button().click()
+    #officeLoginPages.next_button().click()
 
-    time.sleep(2)
+    #time.sleep(2)
 
-    officeLoginPages.next_button().click()
+    #officeLoginPages.next_button().click()
 
-    office_homepage = O365HomePage(driver)
-    office_homepage.waffle_icon().click()
-    office_homepage.sf_dev_button().click()
+    #office_homepage = O365HomePage(driver)
+    #office_homepage.waffle_icon().click()
+    #office_homepage.sf_dev_button().click()
+    parameters = request.param
+    request.cls.parameters = parameters
     request.cls.driver = driver
     yield
-    #driver.quit()
+    driver.quit()
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item):
@@ -80,8 +83,4 @@ def pytest_runtest_makereport(item):
 
 def _capture_screenshot(name):
         driver.get_screenshot_as_file(name)
-
-@pytest.fixture(scope="class", params=PagesData.pagesData)
-def dataLoad(request):
-    return request.param
 
