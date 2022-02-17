@@ -38,7 +38,7 @@ class BaseClass:
             # returns the WebElement once it is located
 
     def checkPresence(self, locator):
-        element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator)))
+        element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located(locator))
         return element
 
     # An Expectation for checking an element is visible and enabled such that you can click it.
@@ -59,19 +59,6 @@ class BaseClass:
     def checkVisibility(self, locator):
         element = WebDriverWait(self.driver, 20).until(expected_conditions.visibility_of_element_located((locator)))
         return element
-
-    def verifyCSSPresence(self,text):
-        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((text)))
-
-    def verifyPresence(self, locator, syntax):
-        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((locator, syntax)))
-
-    def verifyLinkPresence(self, text):
-        element = WebDriverWait(self.driver, 10).until(
-        EC.presence_of_element_located((By.LINK_TEXT, text)))
-
-    def verifyVisibilityOf(self, locator, text):
-        WebDriverWait(self.driver, 20).until(EC.visibility_of((locator, text)))
 
     def openTab(self, tabName, URI):
         self.driver.execute_script("window.open('about:blank','arguments[0]');", tabName)

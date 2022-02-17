@@ -23,14 +23,6 @@ class TestOne(BaseClass):
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
         sfTab = tabs[len(tabs) - 1]
-        self.driver.switch_to.window(sfTab)
-
-        try:
-            sf_HomePage.nav_console_home().click()
-        except Exception as e:
-            sf_HomePage.login().click()
-            self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
-            log.info(e)
 
         try:
             sf_HomePage.create_data_button().click()
@@ -49,8 +41,8 @@ class TestOne(BaseClass):
 
         leadPage = sf_HomePage.create_data_submit()
         log.info("Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'")
-        button = leadPage.phone_edit_pencil()
-        self.driver.execute_script("arguments[0].click();", button)
+        edit_pencil = leadPage.phone_edit_pencil()
+        self.driver.execute_script("arguments[0].click();", edit_pencil)
 
 
         tel_css_selector = leadPage.phone_number().get_attribute("value")
@@ -60,13 +52,14 @@ class TestOne(BaseClass):
         log.info("Deleted primary phone field from the created lead and selected 'save'")
 
         # Checking visibility means the element is displayed returns the WebElement
-        self.checkVisibility(leadPage.conversionReadinessPhone)
+        self.driver.execute_script("window.scrollTo(0,0);")
+#       self.checkVisibility(leadPage.conversionReadinessPhone)
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
                  " field that needs to be entered in order to convert")
-        self.driver.execute_script("window.scrollTo(0,0);")
 
         time.sleep(1)
         self.driver.refresh()
+        staleness = wait.until(expected_conditions.staleness_of(edit_pencil))
 
         #checkPresence will return WebElement
         edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
@@ -87,15 +80,16 @@ class TestOne(BaseClass):
         invOpportunity = leadPage.lead_conversion_save()
         log.info("Select 'save' in 'lead conversion' modal")
         #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
-        self.checkPresence(invOpportunity.paymentScheduleButton)
-        time.sleep(5)
+        payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+        time.sleep(2)
         self.driver.refresh()
 
-        # checkPresence will return WebElement and check presence
+        wait.until(expected_conditions.staleness_of(payment_schedule_button))
         payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
         log.info("In the investigation opportunity, selected 'create payment schedules'")
 
+        # checkPresence will return WebElement and check presence
         try:
             self.selectDate()
             invOpportunity.iframe_payment_save_button().click()
@@ -106,6 +100,7 @@ class TestOne(BaseClass):
             log.warning("A modal appeared with no fields so will refresh and try again")
             self.driver.refresh()
             log.info("Refreshed successfully")
+            wait.until(expected_conditions.staleness_of(payment_schedule_button))
             # checkPresence will return WebElement and check presence
 
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
@@ -154,9 +149,10 @@ class TestOne(BaseClass):
             self.checkClickablity(portalHomepage.getStarted)
             portalHomepage.portal_get_started().click()
         except StaleElementReferenceException as Exception:
-            print('StaleElementReferenceException while trying to click start, trying to find element again')
+            log.info('StaleElementReferenceException while trying to click start, trying to find element again')
             self.checkClickablity(portalHomepage.getStarted)
             portalHomepage.portal_get_started().click()
+            log.info(Exception)
 
         self.checkClickablity(portalHomepage.agree)
         signaturePage = portalHomepage.portal_agree()
@@ -180,7 +176,6 @@ class TestOne(BaseClass):
         verifyButton = infoVerificationPage.verify_button()
         self.driver.execute_script("arguments[0].click();", verifyButton)
         serviceAgreementPage = infoVerificationPage.confirm_button()
-        #self.driver.find_element(By.CSS_SELECTOR,"button[id='forms-nav-verify']").click()
 
         for i in range(4):
             try:
@@ -191,8 +186,7 @@ class TestOne(BaseClass):
                     text = p.text
                     assert text is not None, "Program outline may be missing contents please login to check."
                 self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
-                # self.driver.execute_script("argument[0].scrollIntoView();", close_element)
-                # close_element.click()
+
                 continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
                 self.driver.execute_script("arguments[0].click();", continue_button_location)
             except:
