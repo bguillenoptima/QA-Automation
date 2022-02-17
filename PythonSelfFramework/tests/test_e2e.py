@@ -91,8 +91,8 @@ class TestOne(BaseClass):
             log.info("In the investigation opportunity, selected 'create payment schedules'")
         except StaleElementReferenceException as Exception:
             log.warning(Exception)
-            payment_schedule_button = invOpportunity.payment_schedule_button()
-            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            paymentScheduleButton = invOpportunity.payment_schedule_button()
+            self.driver.execute_script("arguments[0].click();", paymentScheduleButton)
             log.info("In the investigation opportunity, selected 'create payment schedules'")
 
         # checkPresence will return WebElement and check presence
@@ -162,22 +162,14 @@ class TestOne(BaseClass):
 
         self.checkClickablity(portalHomepage.agree)
         signaturePage = portalHomepage.portal_agree()
-        canvas = signaturePage.portal_canvas()
-        # may want to do a sign function
-        self.sign(canvas)
-#        action.click_and_hold(canvas) \
-#            .move_by_offset(-10, -15) \
-#            .move_by_offset(20, 32) \
-#            .move_by_offset(10, 25) \
-#            .release()
-#        action.perform()
 
+        canvas = signaturePage.portal_canvas()
+        self.sign(canvas)
         infoVerificationPage = signaturePage.portal_submit()
+
         infoVerificationPage.ssn_field().send_keys(self.parameters["client_ssn"])
-        dobDropDowns = infoVerificationPage.dob_drop_downs()
-        for dob in dobDropDowns:
-            date_select = Select(dob)
-            date_select.select_by_index(2)
+        dateOfBirthDropDowns = infoVerificationPage.dob_drop_downs()
+        self.enter_dob(dateOfBirthDropDowns)
         self.checkVisibility(infoVerificationPage.verify)
 
         verifyButton = infoVerificationPage.verify_button()

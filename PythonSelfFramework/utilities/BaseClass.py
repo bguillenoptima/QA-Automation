@@ -8,6 +8,7 @@ import inspect
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC, wait, expected_conditions
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from pageObjects.DisposableEmailPage import DisposableEmailPage
@@ -106,6 +107,7 @@ class BaseClass:
 
         for uparrow in range(month):
             action.send_keys(Keys.ARROW_UP).perform()
+
     def sign(self, canvas):
         action = ActionChains(self.driver)
         action.click_and_hold(canvas) \
@@ -114,6 +116,12 @@ class BaseClass:
             .move_by_offset(10, 25) \
             .release()
         action.perform()
+
+    def enter_dob(self, dropDowns):
+        for element in dropDowns:
+            date_select = Select(element)
+            date_select.select_by_index(2)
+
 
 
 
