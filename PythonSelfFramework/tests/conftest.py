@@ -29,7 +29,7 @@ def setup(request):
         driver = webdriver.Edge(executable_path="C:\\msedgedriver.exe")
 
     driver.implicitly_wait(20)
-    driver.get("https://optimatax.lightning.force.com/lightning/page/home")
+    driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
 
     parameters = request.param
     request.cls.parameters = parameters

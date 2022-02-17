@@ -19,8 +19,11 @@ class TestOne(BaseClass):
         wait = WebDriverWait(self.driver, 20)
         sfLoginPage = O365LoginPages(self.driver)
 
+
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
+        sfTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(sfTab)
 
         try:
             sf_HomePage.nav_console_home().click()
@@ -38,7 +41,9 @@ class TestOne(BaseClass):
             log.info(e)
 
         clientInformation = self.getTempEmail()
-        self.driver.switch_to.window(tabs[0])
+        expected_conditions.new_window_is_opened(tabs)
+        disposableEmailTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(sfTab)
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
