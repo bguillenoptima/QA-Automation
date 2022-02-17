@@ -4,9 +4,7 @@ from selenium.webdriver.support import expected_conditions
 import time
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-
 from pageObjects.O365LoginPages import O365LoginPages
-from pageObjects.SfHomePage import SalesForceHomePage
 from selenium.common.exceptions import StaleElementReferenceException
 from utilities.BaseClass import BaseClass
 
@@ -21,14 +19,15 @@ class TestOne(BaseClass):
 
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
+        sfTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(sfTab)
 
-        try:
-            sf_HomePage.nav_console_home().click()
-        except Exception as e:
-            sf_HomePage.login().click()
-            self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
-            log.info(e)
-
+#        try:
+#            sf_HomePage.nav_console_home().click()
+#        except Exception as e:
+#            sf_HomePage.login().click()
+#            self.driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
+#            log.info(e)
         try:
             sf_HomePage.create_data_button().click()
             log.info("In the Salesforce sales console, on the home page, selected 'create data'")
@@ -38,7 +37,9 @@ class TestOne(BaseClass):
             log.info(e)
 
         clientInformation = self.getTempEmail()
-        self.driver.switch_to.window(tabs[0])
+        expected_conditions.new_window_is_opened(tabs)
+        disposableEmailTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(disposableEmailTab)
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
@@ -55,24 +56,50 @@ class TestOne(BaseClass):
         log.info("Deleted primary phone field from the created lead and selected 'save'")
 
         # Checking visibility means the element is displayed returns the WebElement
-        self.checkVisibility(leadPage.conversionReadinessPhone)
+        self.driver.execute_script("window.scrollTo(0,0);")
+        #self.checkVisibility(leadPage.conversionReadinessPhone)
+        wait.until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "h3[title='Phone']")))
+        #wait.until(expected_conditions.visibility_of_any_elements_located(((By.CSS_SELECTOR, "h3[title='Phone']"))))
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
                  " field that needs to be entered in order to convert")
         self.driver.execute_script("window.scrollTo(0,0);")
 
-        time.sleep(1)
-        self.driver.refresh()
+        #time.sleep(1)
+        #self.driver.refresh()
 
         #checkPresence will return WebElement
-        edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
-        self.driver.execute_script("arguments[0].click();", edit_pencil)
-        self.driver.execute_script("window.scrollTo(0,0);")
+        #edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
+        #self.driver.execute_script("arguments[0].click();", edit_pencil)
+        #self.driver.execute_script("window.scrollTo(0,0);")
+        try:
+            edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
+            self.driver.execute_script("arguments[0].click();", edit_pencil)
+            self.driver.execute_script("window.scrollTo(0,0);")
+            log.info("Entered all required fields and selected 'save'")
 
-        leadPage.phone_number().send_keys(tel_css_selector)
-        secondSave = leadPage.contact_details_save()
-        action.move_to_element(secondSave).perform()
-        action.click(secondSave).perform()
-        log.info("Entered all required fields and selected 'save'")
+            leadPage.phone_number().send_keys(tel_css_selector)
+            secondSave = leadPage.contact_details_save()
+            action.move_to_element(secondSave).perform()
+            action.click(secondSave).perform()
+            log.info("Entered all required fields and selected 'save'")
+        except StaleElementReferenceException as Exception:
+            log.info('StaleElementReferenceException while trying to click start, trying to find element again')
+            edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
+            self.driver.execute_script("arguments[0].click();", edit_pencil)
+            self.driver.execute_script("window.scrollTo(0,0);")
+            log.info("Entered all required fields and selected 'save'")
+
+            leadPage.phone_number().send_keys(tel_css_selector)
+            secondSave = leadPage.contact_details_save()
+            action.move_to_element(secondSave).perform()
+            action.click(secondSave).perform()
+            log.info("Entered all required fields and selected 'save'")
+
+        #leadPage.phone_number().send_keys(tel_css_selector)
+        #secondSave = leadPage.contact_details_save()
+        #action.move_to_element(secondSave).perform()
+        #action.click(secondSave).perform()
+        #log.info("Entered all required fields and selected 'save'")
 
 
         convertButton = leadPage.convert_button()
@@ -81,15 +108,25 @@ class TestOne(BaseClass):
 
         invOpportunity = leadPage.lead_conversion_save()
         log.info("Select 'save' in 'lead conversion' modal")
-        #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
-        self.checkPresence(invOpportunity.paymentScheduleButton)
-        time.sleep(5)
+
+        payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+        time.sleep(2)
         self.driver.refresh()
 
-        # checkPresence will return WebElement and check presence
-        payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
-        self.driver.execute_script("arguments[0].click();", payment_schedule_button)
-        log.info("In the investigation opportunity, selected 'create payment schedules'")
+        #payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+        #self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+        #log.info("In the investigation opportunity, selected 'create payment schedules'")
+        try:
+            # checkPresence will return WebElement and check presence
+            # presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
+
+            #payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            log.info("In the investigation opportunity, selected 'create payment schedules'")
+        except StaleElementReferenceException as Exception:
+            log.info('StaleElementReferenceException while trying to click start, trying to find element again')
+            payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
 
         try:
             self.selectDate()
@@ -127,8 +164,10 @@ class TestOne(BaseClass):
         self.checkClickablity(invOpportunity.sendEmail)
 
         disposableEmail = invOpportunity.send_email()
-        tabs = self.driver.window_handles
-        self.driver.switch_to.window(tabs[1])
+
+        self.driver.switch_to.window(disposableEmailTab)
+        #tabs = self.driver.window_handles
+        #self.driver.switch_to.window(tabs[1])
 
         self.driver.switch_to.default_content()
         disposableEmail.welcome_email().click()
@@ -136,8 +175,11 @@ class TestOne(BaseClass):
 
         portalPasswordCreate = disposableEmail.welcome_email_create_link()
 
-        portal = self.driver.window_handles[2]
-        self.driver.switch_to.window(portal)
+        #portal = self.driver.window_handles[2]
+        #self.driver.switch_to.window(portal)
+        expected_conditions.new_window_is_opened(tabs)
+        portalTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(portalTab)
         portalPasswordCreate.portal_password().send_keys(self.parameters["client_password"])
         portalPasswordCreate.confirm_password().send_keys(self.parameters["client_password"])
         portalHomepage = portalPasswordCreate.create_account()
@@ -226,7 +268,10 @@ class TestOne(BaseClass):
 
         self.driver.execute_script("window.open('about:blank','admin_portal');")
         #wait.until(expected_conditions.new_window_is_opened(tabs))
-        self.driver.switch_to.window("admin_portal")
+        expected_conditions.new_window_is_opened(tabs)
+        adminPortalTab = tabs[len(tabs) - 1]
+        self.driver.switch_to.window(adminPortalTab)
+        #self.driver.switch_to.window("admin_portal")
         self.driver.get("https://admin-dev.optimatax.com/dashboard")
 
         self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
@@ -248,7 +293,7 @@ class TestOne(BaseClass):
         except:
             print("Unable to verify alert-success for Payment")
 
-        self.driver.switch_to.window(tabs[0])
+        self.driver.switch_to.window(sfTab)
 
 
 
