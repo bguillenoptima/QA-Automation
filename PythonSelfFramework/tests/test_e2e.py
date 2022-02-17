@@ -44,7 +44,6 @@ class TestOne(BaseClass):
         edit_pencil = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", edit_pencil)
 
-
         tel_css_selector = leadPage.phone_number().get_attribute("value")
         leadPage.phone_number().clear()
         save = leadPage.contact_details_save()
@@ -53,7 +52,7 @@ class TestOne(BaseClass):
 
         # Checking visibility means the element is displayed returns the WebElement
         self.driver.execute_script("window.scrollTo(0,0);")
-#       self.checkVisibility(leadPage.conversionReadinessPhone)
+        self.checkVisibility(leadPage.conversionReadinessPhone)
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
                  " field that needs to be entered in order to convert")
 
@@ -61,7 +60,8 @@ class TestOne(BaseClass):
         self.driver.refresh()
         staleness = wait.until(expected_conditions.staleness_of(edit_pencil))
 
-        #checkPresence will return WebElement
+        # checkPresence will return WebElement
+        self.driver.execute_script("window.scrollTo(0,0);")
         edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
         self.driver.execute_script("arguments[0].click();", edit_pencil)
         self.driver.execute_script("window.scrollTo(0,0);")
@@ -79,13 +79,16 @@ class TestOne(BaseClass):
 
         invOpportunity = leadPage.lead_conversion_save()
         log.info("Select 'save' in 'lead conversion' modal")
-        #presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
+        # presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+        log.debug("payment schedule web element before refresh" + payment_schedule_button)
         time.sleep(2)
         self.driver.refresh()
 
-        wait.until(expected_conditions.staleness_of(payment_schedule_button))
+        staleness = wait.until(expected_conditions.staleness_of(payment_schedule_button))
+        log.debug("After refreshStaleness:" + staleness)
         payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+        log.debug("payment schedule after refresh and after stale element check" + payment_schedule_button)
         self.driver.execute_script("arguments[0].click();", payment_schedule_button)
         log.info("In the investigation opportunity, selected 'create payment schedules'")
 

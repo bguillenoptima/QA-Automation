@@ -70,6 +70,8 @@ class BaseClass:
     def getTempEmail(self):
         self.openTab("disposable_email","https://www.disposablemail.com/")
         emailInbox = DisposableEmailPage(self.driver)
+        emailInbox.delete_email().click()
+        time.sleep(2)
         email_Address = emailInbox.store_email().text
 
         first_name_last_name = email_Address.split(".")
