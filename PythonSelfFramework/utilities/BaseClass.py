@@ -19,7 +19,6 @@ logger.addHandler(fileHandler)  #filehandler object
 
 @pytest.mark.usefixtures("setup")
 class BaseClass:
-
     def getLogger(self):
         loggerName = inspect.stack()[1][3]
         logger = logging.getLogger(loggerName)
@@ -107,6 +106,14 @@ class BaseClass:
 
         for uparrow in range(month):
             action.send_keys(Keys.ARROW_UP).perform()
+    def sign(self, canvas):
+        action = ActionChains(self.driver)
+        action.click_and_hold(canvas) \
+            .move_by_offset(-10, -15) \
+            .move_by_offset(20, 32) \
+            .move_by_offset(10, 25) \
+            .release()
+        action.perform()
 
 
 

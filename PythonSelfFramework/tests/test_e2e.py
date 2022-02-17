@@ -81,16 +81,19 @@ class TestOne(BaseClass):
         log.info("Select 'save' in 'lead conversion' modal")
         # presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
-        log.debug("payment schedule web element before refresh" + payment_schedule_button)
         time.sleep(2)
         self.driver.refresh()
 
-        staleness = wait.until(expected_conditions.staleness_of(payment_schedule_button))
-        log.debug("After refreshStaleness:" + staleness)
-        payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
-        log.debug("payment schedule after refresh and after stale element check" + payment_schedule_button)
-        self.driver.execute_script("arguments[0].click();", payment_schedule_button)
-        log.info("In the investigation opportunity, selected 'create payment schedules'")
+        try:
+            wait.until(expected_conditions.staleness_of(payment_schedule_button))
+            payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            log.info("In the investigation opportunity, selected 'create payment schedules'")
+        except StaleElementReferenceException as Exception:
+            log.warning(Exception)
+            payment_schedule_button = invOpportunity.payment_schedule_button()
+            self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            log.info("In the investigation opportunity, selected 'create payment schedules'")
 
         # checkPresence will return WebElement and check presence
         try:
@@ -159,14 +162,15 @@ class TestOne(BaseClass):
 
         self.checkClickablity(portalHomepage.agree)
         signaturePage = portalHomepage.portal_agree()
-
         canvas = signaturePage.portal_canvas()
-        action.click_and_hold(canvas) \
-            .move_by_offset(-10, -15) \
-            .move_by_offset(20, 32) \
-            .move_by_offset(10, 25) \
-            .release()
-        action.perform()
+        # may want to do a sign function
+        self.sign(canvas)
+#        action.click_and_hold(canvas) \
+#            .move_by_offset(-10, -15) \
+#            .move_by_offset(20, 32) \
+#            .move_by_offset(10, 25) \
+#            .release()
+#        action.perform()
 
         infoVerificationPage = signaturePage.portal_submit()
         infoVerificationPage.ssn_field().send_keys(self.parameters["client_ssn"])
