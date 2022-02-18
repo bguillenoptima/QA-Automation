@@ -2,13 +2,12 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 import time
-from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from pageObjects.O365LoginPages import O365LoginPages
-from pageObjects.SfHomePage import SalesForceHomePage
 from selenium.common.exceptions import StaleElementReferenceException
 from utilities.BaseClass import BaseClass
+from pageObjects.TaxInformationPage import TaxInformationAuthorization
 
 
 
@@ -18,7 +17,6 @@ class TestOne(BaseClass):
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
         sfLoginPage = O365LoginPages(self.driver)
-
 
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
@@ -40,7 +38,8 @@ class TestOne(BaseClass):
         sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
 
         leadPage = sf_HomePage.create_data_submit()
-        log.info("Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'")
+        log.info(
+            "Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'")
         edit_pencil = leadPage.phone_edit_pencil()
         self.driver.execute_script("arguments[0].click();", edit_pencil)
 
@@ -52,26 +51,31 @@ class TestOne(BaseClass):
 
         # Checking visibility means the element is displayed returns the WebElement
         self.driver.execute_script("window.scrollTo(0,0);")
-        self.checkVisibility(leadPage.conversionReadinessPhone)
+#        self.checkVisibility(leadPage.conversionReadinessPhone)
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
                  " field that needs to be entered in order to convert")
 
         time.sleep(1)
         self.driver.refresh()
-        staleness = wait.until(expected_conditions.staleness_of(edit_pencil))
+        wait.until(expected_conditions.staleness_of(edit_pencil))
 
         # checkPresence will return WebElement
         self.driver.execute_script("window.scrollTo(0,0);")
         edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
-        self.driver.execute_script("arguments[0].click();", edit_pencil)
-        self.driver.execute_script("window.scrollTo(0,0);")
+
+        try:
+            self.driver.execute_script("arguments[0].click();", edit_pencil)
+            self.driver.execute_script("window.scrollTo(0,0);")
+        except StaleElementReferenceException as Exception:
+            editPencil = leadPage.phone_edit_pencil()
+            self.driver.execute_script("arguments[0].click();", editPencil)
+            log.warning(Exception)
 
         leadPage.phone_number().send_keys(tel_css_selector)
         secondSave = leadPage.contact_details_save()
         action.move_to_element(secondSave).perform()
         action.click(secondSave).perform()
         log.info("Entered all required fields and selected 'save'")
-
 
         convertButton = leadPage.convert_button()
         self.driver.execute_script("arguments[0].click();", convertButton)
@@ -81,13 +85,15 @@ class TestOne(BaseClass):
         log.info("Select 'save' in 'lead conversion' modal")
         # presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
         payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
-        time.sleep(2)
+        time.sleep(5)
         self.driver.refresh()
 
         try:
             wait.until(expected_conditions.staleness_of(payment_schedule_button))
+            time.sleep(15)
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+            time.sleep(5)
             log.info("In the investigation opportunity, selected 'create payment schedules'")
         except StaleElementReferenceException as Exception:
             log.warning(Exception)
@@ -175,40 +181,51 @@ class TestOne(BaseClass):
         verifyButton = infoVerificationPage.verify_button()
         self.driver.execute_script("arguments[0].click();", verifyButton)
         serviceAgreementPage = infoVerificationPage.confirm_button()
+        # try should go in the place of if
+        for serviceAgreement in range(2):
+            serviceAgreementPage.view_form_button().click()
+            serviceAgreementPage.read_more_button().click()
+            self.check_paragraph_contents(serviceAgreementPage.content())
+            serviceAgreementPage.x_button().click()
+            continue_button_location = serviceAgreementPage.continue_button()
+            self.driver.execute_script("arguments[0].click();", continue_button_location)
 
-        for i in range(4):
-            try:
-                serviceAgreementPage.view_form_button().click()
-                serviceAgreementPage.read_more_button().click()
-                self.check_paragraph_contents(serviceAgreementPage.content())
-                serviceAgreementPage.x_button().click()
+#        self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
+#        continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
+#        self.driver.execute_script("arguments[0].click();", continue_button_location)
+        taxInformation = TaxInformationAuthorization(self.driver)
+        taxInformation.view_form().click()
+        self.check_image_visibility(taxInformation.form_image())
+        taxInformation.x_button().click()
+        requestForTranscript = taxInformation.continue_button()
 
-                continue_button_location = serviceAgreementPage.continue_button()
-                self.driver.execute_script("arguments[0].click();", continue_button_location)
-            except:
-                self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
-                continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
-                self.driver.execute_script("arguments[0].click();", continue_button_location)
+        transcriptsViewLinks = requestForTranscript.view_form_elements()
+        for viewLink in transcriptsViewLinks:
+            viewLink.click()
+            self.check_image_visibility(requestForTranscript.form_image())
+            requestForTranscript.x_button().click()
+        paymentAuthPages = requestForTranscript.continue_button()
 
-        self.driver.find_element(By.XPATH, "//div[@id='signers']/button[1]").click()
+        paymentAuthPages.payment_signer().click()
 
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Credit or Debit Card')]").click()
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(self.parameters["credit_card_number"])
+        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(
+            self.parameters["credit_card_number"])
 
         self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(self.parameters["cvv"])
 
-        #check confirm payment schedule button because it goes back to the payment page
+            # check confirm payment schedule button because it goes back to the payment page
         for i in range(4):
-
             continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
             self.driver.execute_script("arguments[0].click();", continue_button_location)
 
         self.driver.switch_to.window(tabs[0])
         self.driver.refresh()
 
-        manage_docs_element = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
-        #elf.driver.execute_script("arguments[0].click();", manage_docs_element)
+        manage_docs_element = wait.until(
+            expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
+        # elf.driver.execute_script("arguments[0].click();", manage_docs_element)
 
         wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
             (By.XPATH, "//div[@class='content iframe-parent']/iframe")))
@@ -220,13 +237,13 @@ class TestOne(BaseClass):
         self.driver.find_element(By.CSS_SELECTOR, "button[id='ready-for-payments-btn']").click()
 
         self.driver.execute_script("window.open('about:blank','admin_portal');")
-        #wait.until(expected_conditions.new_window_is_opened(tabs))
+        # wait.until(expected_conditions.new_window_is_opened(tabs))
         self.driver.switch_to.window("admin_portal")
         self.driver.get("https://admin-dev.optimatax.com/dashboard")
 
         self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
-        self.driver.find_element(By.PARTIAL_LINK_TEXT,"Opportunities").click()
+        self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunities").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunity").click()
         self.driver.find_element(By.XPATH, "//tr[@id='form-21244']/td[5]").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Approve").click()
@@ -237,39 +254,11 @@ class TestOne(BaseClass):
         self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']").click()
 
         try:
-            alert_success_element = self.driver.find_element(By.XPATH, "//div[contains(text(), 'processed successfully.')]")
+            alert_success_element = self.driver.find_element(By.XPATH,
+                                                             "//div[contains(text(), 'processed successfully.')]")
             wait.until(expected_conditions.visibility_of(alert_success_element))
             print(alert_success_element.text)
         except:
             print("Unable to verify alert-success for Payment")
 
         self.driver.switch_to.window(tabs[0])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

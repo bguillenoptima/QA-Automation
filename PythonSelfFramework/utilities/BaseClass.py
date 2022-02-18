@@ -128,6 +128,13 @@ class BaseClass:
             text = p.text
             assert text is not None, "Program outline may be missing contents please login to check."
 
+    def check_image_visibility(self, webElement):
+       element = WebDriverWait(self.driver, 20).until(EC.visibility_of(webElement))
+       return element
+
+
+
+
 
 
 

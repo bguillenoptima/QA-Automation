@@ -11,7 +11,7 @@ class InformationVerificationPage:
     ssn = (By.CSS_SELECTOR, "input[name='masked_tax_identification_number']")
     dobDropDowns = (By.CSS_SELECTOR, "select[name*='birth']")
     verify = (By.CSS_SELECTOR, "button[id='show-confirmation-modal']")
-    confirmButton = (By.CSS_SELECTOR,"button[id='forms-nav-verify']")
+    confirmButton = (By.CSS_SELECTOR, "button[id='forms-nav-verify']")
 
     def ssn_field(self):
         return self.driver.find_element(*InformationVerificationPage.ssn)
