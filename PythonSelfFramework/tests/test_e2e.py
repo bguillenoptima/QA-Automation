@@ -113,8 +113,8 @@ class TestOne(BaseClass):
             self.driver.refresh()
             log.info("Refreshed successfully")
             wait.until(expected_conditions.staleness_of(payment_schedule_button))
-            # checkPresence will return WebElement and check presence
 
+            # checkPresence will return WebElement and check presence
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
             log.warning("In the investigation opportunity, selected 'create payment schedules'")
@@ -181,7 +181,7 @@ class TestOne(BaseClass):
         verifyButton = infoVerificationPage.verify_button()
         self.driver.execute_script("arguments[0].click();", verifyButton)
         serviceAgreementPage = infoVerificationPage.confirm_button()
-        # try should go in the place of if
+
         for serviceAgreement in range(2):
             serviceAgreementPage.view_form_button().click()
             serviceAgreementPage.read_more_button().click()
@@ -190,9 +190,6 @@ class TestOne(BaseClass):
             continue_button_location = serviceAgreementPage.continue_button()
             self.driver.execute_script("arguments[0].click();", continue_button_location)
 
-#        self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
-#        continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
-#        self.driver.execute_script("arguments[0].click();", continue_button_location)
         taxInformation = TaxInformationAuthorization(self.driver)
         taxInformation.view_form().click()
         self.check_image_visibility(taxInformation.form_image())
@@ -207,18 +204,15 @@ class TestOne(BaseClass):
         paymentAuthPages = requestForTranscript.continue_button()
 
         paymentAuthPages.payment_signer().click()
-
-        self.driver.find_element(By.XPATH, "//button[contains(text(),'Credit or Debit Card')]").click()
-
-        self.driver.find_element(By.CSS_SELECTOR, "input[id='cc-number']").send_keys(
+        paymentAuthPages.card_button().click()
+        paymentAuthPages.card_number_field().send_keys(
             self.parameters["credit_card_number"])
+        paymentAuthPages.cvv_number_field().send_keys(self.parameters["cvv"])
 
-        self.driver.find_element(By.CSS_SELECTOR, "input[name='cc_cvv']").send_keys(self.parameters["cvv"])
-
-            # check confirm payment schedule button because it goes back to the payment page
-        for i in range(4):
-            continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
-            self.driver.execute_script("arguments[0].click();", continue_button_location)
+        for i in range(2):
+            paymentAuthPages.continue_button().click()
+        paymentAuthPages.confirm_schedule_button().click()
+        paymentAuthPages.apply_signature_button().click()
 
         self.driver.switch_to.window(tabs[0])
         self.driver.refresh()
