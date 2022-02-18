@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-from pageObjects.ServiceAgreementPage import ServiceAgreementPage
+from pageObjects.ServiceAgreementPage import ServiceAgreementPages
 
 
 class InformationVerificationPage:
@@ -24,7 +24,7 @@ class InformationVerificationPage:
 
     def confirm_button(self):
         self.driver.find_element(*InformationVerificationPage.confirmButton).click()
-        serviceAgreementPage = ServiceAgreementPage(self.driver)
+        serviceAgreementPage = ServiceAgreementPages(self.driver)
         return serviceAgreementPage
 
 

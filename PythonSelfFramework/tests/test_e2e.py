@@ -178,15 +178,12 @@ class TestOne(BaseClass):
 
         for i in range(4):
             try:
-                self.driver.find_element(By.PARTIAL_LINK_TEXT, "View").click()
-                self.driver.find_element(By.LINK_TEXT, "read more...").click()
-                program_outline = self.driver.find_elements(By.CSS_SELECTOR, "div[class='more'] p")
-                for p in program_outline:
-                    text = p.text
-                    assert text is not None, "Program outline may be missing contents please login to check."
-                self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
+                serviceAgreementPage.view_form_button().click()
+                serviceAgreementPage.read_more_button().click()
+                self.check_paragraph_contents(serviceAgreementPage.content())
+                serviceAgreementPage.x_button().click()
 
-                continue_button_location = self.driver.find_element(By.CSS_SELECTOR, "[class*='btn-success']")
+                continue_button_location = serviceAgreementPage.continue_button()
                 self.driver.execute_script("arguments[0].click();", continue_button_location)
             except:
                 self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()

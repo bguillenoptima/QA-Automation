@@ -3374,3 +3374,208 @@ Backtrace:
 	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
 	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
 
+2022-02-17 17:02:33,983 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-17 17:02:39,473 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-17 17:02:49,840 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-17 17:02:50,919 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-17 17:02:58,405 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-17 17:02:59,788 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-17 17:02:59,817 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-17 17:03:17,007 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-17 17:03:20,056 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-17 17:03:53,850 :INFO : test_e2e :StaleElementReferenceException while trying to click start, trying to find element again
+2022-02-17 17:03:53,921 :INFO : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x0117FDC3+2555331]
+	Ordinal0 [0x011177F1+2127857]
+	Ordinal0 [0x01012E08+1060360]
+	Ordinal0 [0x01015524+1070372]
+	Ordinal0 [0x010153EE+1070062]
+	Ordinal0 [0x01015650+1070672]
+	Ordinal0 [0x0103FD5C+1244508]
+	Ordinal0 [0x01034ED6+1199830]
+	Ordinal0 [0x01057B0C+1342220]
+	Ordinal0 [0x01034984+1198468]
+	Ordinal0 [0x01057C14+1342484]
+	Ordinal0 [0x010675FA+1406458]
+	Ordinal0 [0x01057976+1341814]
+	Ordinal0 [0x010336B6+1193654]
+	Ordinal0 [0x01034546+1197382]
+	GetHandleVerifier [0x01319622+1619522]
+	GetHandleVerifier [0x013C882C+2336844]
+	GetHandleVerifier [0x012123E1+541697]
+	GetHandleVerifier [0x01211443+537699]
+	Ordinal0 [0x0111D18E+2150798]
+	Ordinal0 [0x01121518+2168088]
+	Ordinal0 [0x01121660+2168416]
+	Ordinal0 [0x0112B330+2208560]
+	BaseThreadInitThunk [0x76B0FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
+
+2022-02-17 17:04:44,110 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-17 17:04:49,257 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-17 17:04:58,610 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-17 17:04:59,689 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-17 17:05:07,701 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-17 17:05:09,576 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-17 17:05:09,600 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-17 17:05:26,224 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-17 17:05:29,281 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-17 17:06:03,066 :INFO : test_e2e :StaleElementReferenceException while trying to click start, trying to find element again
+2022-02-17 17:06:03,132 :INFO : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x0117FDC3+2555331]
+	Ordinal0 [0x011177F1+2127857]
+	Ordinal0 [0x01012E08+1060360]
+	Ordinal0 [0x01015524+1070372]
+	Ordinal0 [0x010153EE+1070062]
+	Ordinal0 [0x01015650+1070672]
+	Ordinal0 [0x0103FD5C+1244508]
+	Ordinal0 [0x01034ED6+1199830]
+	Ordinal0 [0x01057B0C+1342220]
+	Ordinal0 [0x01034984+1198468]
+	Ordinal0 [0x01057C14+1342484]
+	Ordinal0 [0x010675FA+1406458]
+	Ordinal0 [0x01057976+1341814]
+	Ordinal0 [0x010336B6+1193654]
+	Ordinal0 [0x01034546+1197382]
+	GetHandleVerifier [0x01319622+1619522]
+	GetHandleVerifier [0x013C882C+2336844]
+	GetHandleVerifier [0x012123E1+541697]
+	GetHandleVerifier [0x01211443+537699]
+	Ordinal0 [0x0111D18E+2150798]
+	Ordinal0 [0x01121518+2168088]
+	Ordinal0 [0x01121660+2168416]
+	Ordinal0 [0x0112B330+2208560]
+	BaseThreadInitThunk [0x76B0FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
+
+2022-02-17 17:07:35,670 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-17 17:07:42,879 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-17 17:07:52,198 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-17 17:07:53,740 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-17 17:08:01,611 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-17 17:08:02,993 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-17 17:08:03,025 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-17 17:08:19,482 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-17 17:08:22,586 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-17 17:08:54,903 :INFO : test_e2e :StaleElementReferenceException while trying to click start, trying to find element again
+2022-02-17 17:08:54,976 :INFO : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x0117FDC3+2555331]
+	Ordinal0 [0x011177F1+2127857]
+	Ordinal0 [0x01012E08+1060360]
+	Ordinal0 [0x01015524+1070372]
+	Ordinal0 [0x010153EE+1070062]
+	Ordinal0 [0x01015650+1070672]
+	Ordinal0 [0x0103FD5C+1244508]
+	Ordinal0 [0x01034ED6+1199830]
+	Ordinal0 [0x01057B0C+1342220]
+	Ordinal0 [0x01034984+1198468]
+	Ordinal0 [0x01057C14+1342484]
+	Ordinal0 [0x010675FA+1406458]
+	Ordinal0 [0x01057976+1341814]
+	Ordinal0 [0x010336B6+1193654]
+	Ordinal0 [0x01034546+1197382]
+	GetHandleVerifier [0x01319622+1619522]
+	GetHandleVerifier [0x013C882C+2336844]
+	GetHandleVerifier [0x012123E1+541697]
+	GetHandleVerifier [0x01211443+537699]
+	Ordinal0 [0x0111D18E+2150798]
+	Ordinal0 [0x01121518+2168088]
+	Ordinal0 [0x01121660+2168416]
+	Ordinal0 [0x0112B330+2208560]
+	BaseThreadInitThunk [0x76B0FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
+
+2022-02-17 17:13:39,350 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-17 17:13:43,908 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-17 17:13:55,226 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-17 17:13:56,478 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-17 17:14:03,865 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-17 17:14:04,922 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-17 17:14:04,958 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-17 17:14:22,168 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-17 17:14:25,438 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-17 17:15:09,902 :INFO : test_e2e :StaleElementReferenceException while trying to click start, trying to find element again
+2022-02-17 17:15:09,971 :INFO : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x0117FDC3+2555331]
+	Ordinal0 [0x011177F1+2127857]
+	Ordinal0 [0x01012E08+1060360]
+	Ordinal0 [0x01015524+1070372]
+	Ordinal0 [0x010153EE+1070062]
+	Ordinal0 [0x01015650+1070672]
+	Ordinal0 [0x0103FD5C+1244508]
+	Ordinal0 [0x01034ED6+1199830]
+	Ordinal0 [0x01057B0C+1342220]
+	Ordinal0 [0x01034984+1198468]
+	Ordinal0 [0x01057C14+1342484]
+	Ordinal0 [0x010675FA+1406458]
+	Ordinal0 [0x01057976+1341814]
+	Ordinal0 [0x010336B6+1193654]
+	Ordinal0 [0x01034546+1197382]
+	GetHandleVerifier [0x01319622+1619522]
+	GetHandleVerifier [0x013C882C+2336844]
+	GetHandleVerifier [0x012123E1+541697]
+	GetHandleVerifier [0x01211443+537699]
+	Ordinal0 [0x0111D18E+2150798]
+	Ordinal0 [0x01121518+2168088]
+	Ordinal0 [0x01121660+2168416]
+	Ordinal0 [0x0112B330+2208560]
+	BaseThreadInitThunk [0x76B0FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
+
+2022-02-17 17:34:36,537 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-17 17:34:42,484 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-17 17:34:54,039 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-17 17:34:55,138 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-17 17:35:04,003 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-17 17:35:05,454 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-17 17:35:05,490 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-17 17:35:21,891 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-17 17:35:29,402 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-17 17:36:08,451 :INFO : test_e2e :StaleElementReferenceException while trying to click start, trying to find element again
+2022-02-17 17:36:08,524 :INFO : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x0117FDC3+2555331]
+	Ordinal0 [0x011177F1+2127857]
+	Ordinal0 [0x01012E08+1060360]
+	Ordinal0 [0x01015524+1070372]
+	Ordinal0 [0x010153EE+1070062]
+	Ordinal0 [0x01015650+1070672]
+	Ordinal0 [0x0103FD5C+1244508]
+	Ordinal0 [0x01034ED6+1199830]
+	Ordinal0 [0x01057B0C+1342220]
+	Ordinal0 [0x01034984+1198468]
+	Ordinal0 [0x01057C14+1342484]
+	Ordinal0 [0x010675FA+1406458]
+	Ordinal0 [0x01057976+1341814]
+	Ordinal0 [0x010336B6+1193654]
+	Ordinal0 [0x01034546+1197382]
+	GetHandleVerifier [0x01319622+1619522]
+	GetHandleVerifier [0x013C882C+2336844]
+	GetHandleVerifier [0x012123E1+541697]
+	GetHandleVerifier [0x01211443+537699]
+	Ordinal0 [0x0111D18E+2150798]
+	Ordinal0 [0x01121518+2168088]
+	Ordinal0 [0x01121660+2168416]
+	Ordinal0 [0x0112B330+2208560]
+	BaseThreadInitThunk [0x76B0FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x77887A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x77887A6E+238]
+
