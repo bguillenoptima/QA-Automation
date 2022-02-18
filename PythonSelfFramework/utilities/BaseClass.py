@@ -121,6 +121,14 @@ class BaseClass:
         for element in dropDowns:
             date_select = Select(element)
             date_select.select_by_index(2)
+    def check_contents(self):
+        self.driver.find_element(By.PARTIAL_LINK_TEXT, "View").click()
+        self.driver.find_element(By.LINK_TEXT, "read more...").click()
+        program_outline = self.driver.find_elements(By.CSS_SELECTOR, "div[class='more'] p")
+        for p in program_outline:
+            text = p.text
+            assert text is not None, "Program outline may be missing contents please login to check."
+        self.driver.find_element(By.CSS_SELECTOR, "button[class='close']").click()
 
 
 
