@@ -4701,3 +4701,51 @@ Backtrace:
 2022-02-18 22:44:21,314 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
 2022-02-18 22:44:58,823 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
 2022-02-18 22:45:00,425 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'
+2022-02-19 08:59:52,741 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-19 08:59:57,910 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-19 09:00:13,114 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-19 09:00:13,119 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-19 09:03:01,834 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-19 09:03:06,863 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-19 09:03:16,197 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-19 09:03:16,201 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-19 09:03:24,406 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-19 09:03:25,596 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-19 09:03:25,626 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-19 09:05:04,360 :INFO : test_e2e :In the Salesforce sales console, on the home page, selected 'create data'
+2022-02-19 09:05:09,548 :INFO : test_e2e :Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'
+2022-02-19 09:05:19,125 :INFO : test_e2e :Deleted primary phone field from the created lead and selected 'save'
+2022-02-19 09:05:19,131 :INFO : test_e2e :Under 'lead conversion readiness' window–'convert' button is not visible and shows phone field that needs to be entered in order to convert
+2022-02-19 09:05:26,710 :WARNING : test_e2e :Message: stale element reference: element is not attached to the page document
+  (Session info: chrome=98.0.4758.102)
+Stacktrace:
+Backtrace:
+	Ordinal0 [0x007FFDC3+2555331]
+	Ordinal0 [0x007977F1+2127857]
+	Ordinal0 [0x00692E08+1060360]
+	Ordinal0 [0x00695524+1070372]
+	Ordinal0 [0x006953EE+1070062]
+	Ordinal0 [0x00695C9A+1072282]
+	Ordinal0 [0x006E7F39+1408825]
+	Ordinal0 [0x006D7B0C+1342220]
+	Ordinal0 [0x006E75FA+1406458]
+	Ordinal0 [0x006D7976+1341814]
+	Ordinal0 [0x006B36B6+1193654]
+	Ordinal0 [0x006B4546+1197382]
+	GetHandleVerifier [0x00999622+1619522]
+	GetHandleVerifier [0x00A4882C+2336844]
+	GetHandleVerifier [0x008923E1+541697]
+	GetHandleVerifier [0x00891443+537699]
+	Ordinal0 [0x0079D18E+2150798]
+	Ordinal0 [0x007A1518+2168088]
+	Ordinal0 [0x007A1660+2168416]
+	Ordinal0 [0x007AB330+2208560]
+	BaseThreadInitThunk [0x7650FA29+25]
+	RtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]
+	RtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]
+
+2022-02-19 09:05:28,846 :INFO : test_e2e :Entered all required fields and selected 'save'
+2022-02-19 09:05:30,374 :INFO : test_e2e :Selected 'convert' in 'lead conversion readiness' window
+2022-02-19 09:05:30,447 :INFO : test_e2e :Select 'save' in 'lead conversion' modal
+2022-02-19 09:06:05,340 :INFO : test_e2e :In the investigation opportunity, selected 'create payment schedules'
+2022-02-19 09:06:06,272 :INFO : test_e2e :Selected payment date <= 30 days and selected 'save'

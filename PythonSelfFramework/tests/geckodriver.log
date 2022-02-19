@@ -38,3 +38,51 @@ console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkErr
 
 ###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
 
+1645290683324	geckodriver	INFO	Listening on 127.0.0.1:55733
+1645290686421	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "55734" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofile9B1MOS"
+1645290687186	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofile9B1MOS\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:55734/devtools/browser/3aeb2110-18c0-40e7-963d-ea3f1c98368f
+1645290689401	Marionette	INFO	Listening on port 55746
+1645290689624	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1645290690616	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+1645290701516	Marionette	INFO	Stopped listening on port 55746
+Marionette threw an error: TypeError: browsingContext.currentWindowGlobal is null
+getMarionetteCommandsActorProxy/get/<@chrome://remote/content/marionette/actors/MarionetteCommandsParent.jsm:332:29
+
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+JavaScript error: chrome://remote/content/marionette/cert.js, line 55: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1645290713285	geckodriver	INFO	Listening on 127.0.0.1:55873
+1645290716395	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "55874" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofiledjOvmO"
+1645290716669	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofiledjOvmO\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:55874/devtools/browser/a63e7382-fbda-4d98-bb67-36638963b93a
+1645290718336	Marionette	INFO	Listening on port 55886
+1645290718448	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1645290719033	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+1645290727523	Marionette	INFO	Stopped listening on port 55886
+Marionette threw an error: TypeError: browsingContext.currentWindowGlobal is null
+getMarionetteCommandsActorProxy/get/<@chrome://remote/content/marionette/actors/MarionetteCommandsParent.jsm:332:29
+
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+JavaScript error: chrome://remote/content/marionette/cert.js, line 55: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+1645290742729	geckodriver	INFO	Listening on 127.0.0.1:56017
+1645290745844	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "56018" "-no-remote" "-profile" "C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileJqaFSp"
+1645290746137	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\OTRA155\\AppData\\Local\\Temp\\rust_mozprofileJqaFSp\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:56018/devtools/browser/bd2a1d2f-449b-421a-ad8c-70d4d608abde
+1645290748015	Marionette	INFO	Listening on port 56029
+1645290748054	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1645290748804	Marionette	WARN	Ignoring event 'DOMContentLoaded' because document has an invalid readyState of 'complete'.
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://optimatax--develop.my.salesforce.com"
+1645290752032	Marionette	INFO	Stopped listening on port 56029
+Marionette threw an error: TypeError: browsingContext.currentWindowGlobal is null
+getMarionetteCommandsActorProxy/get/<@chrome://remote/content/marionette/actors/MarionetteCommandsParent.jsm:332:29
+
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+JavaScript error: chrome://remote/content/marionette/cert.js, line 55: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]

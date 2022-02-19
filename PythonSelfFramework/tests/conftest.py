@@ -10,26 +10,38 @@ def pytest_addoption(parser):
     parser.addoption(
         "--browser_name", action="store", default="chrome"
     )
+    parser.addoption(
+        "--env_name", action="store", default="https://optimatax--develop.lightning.force.com/lightning/page/home"
+    )
 
 
 @pytest.fixture(scope="class", params=PagesData.pagesData)
 def setup(request):
     global driver
 
-    options = webdriver.ChromeOptions()
-    options.add_argument("user-data-dir=C:\\Users\\OTRA155\\AppData\\Local\\Google\\Chrome\\User Data")
-    options.add_argument("profile-directory=Profile 1")
-    browser_name = request.config.getoption("browser_name")
+    #browser_name = request.config.getoption("browser_name")
+    browser_name = request.config.getoption("--browser_name")
+    env_name = request.config.getoption("--env_name")
 
     if browser_name == "chrome":
+        options = webdriver.ChromeOptions()
+        options.add_argument("user-data-dir=C:\\Users\\OTRA155\\AppData\\Local\\Google\\Chrome\\User Data")
+        options.add_argument("profile-directory=Profile 1")
         driver = webdriver.Chrome(executable_path="C:\\chromedriver.exe", chrome_options=options)
     elif browser_name == "firefox":
         driver = webdriver.Firefox(executable_path="C:\\geckodriver.exe")
     elif browser_name == "edge":
         driver = webdriver.Edge(executable_path="C:\\msedgedriver.exe")
 
+    if env_name == "dev":
+        driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
+    elif env_name == "staging":
+        driver.get("https://optimatax--staging.lightning.force.com/lightning/page/home")
+    elif env_name == "prod":
+        driver.get("https://optimatax.lightning.force.com/lightning/page/home")
+
     driver.implicitly_wait(20)
-    driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
+    #driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
 
     parameters = request.param
     request.cls.parameters = parameters
