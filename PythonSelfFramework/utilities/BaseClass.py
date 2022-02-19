@@ -66,9 +66,10 @@ class BaseClass:
         tabs_count = len(tabs) - 1
         self.driver.switch_to.window(tabs[tabs_count])
         self.driver.get(URI)
+        return tabs
 
     def getTempEmail(self):
-        self.openTab("disposable_email","https://www.disposablemail.com/")
+        tabs_count = self.openTab("disposable_email","https://www.disposablemail.com/")
         emailInbox = DisposableEmailPage(self.driver)
         emailInbox.delete_email().click()
         time.sleep(2)

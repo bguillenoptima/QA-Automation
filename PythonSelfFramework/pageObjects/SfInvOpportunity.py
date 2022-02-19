@@ -18,6 +18,7 @@ class SalesForceInvOpportunityPage:
     manageDocsIframeTwo = (By.XPATH, "//iframe[@id='manage-forms']")
     manageDocsStart = (By.CSS_SELECTOR, "i[class ='fa fa-rocket']")
     sendEmail = (By.CSS_SELECTOR, "button[class='btn btn-success send-email']")
+    paymentsReady = (By.CSS_SELECTOR, "button[id='ready-for-payments-btn']")
 
     def payment_schedule_button(self):
         return self.driver.find_element(*SalesForceInvOpportunityPage.paymentScheduleButton)
@@ -45,6 +46,8 @@ class SalesForceInvOpportunityPage:
         emailInbox  = DisposableEmailPage(self.driver)
         return emailInbox
 
+    def payments_ready(self):
+        return self.driver.find_element(*SalesForceInvOpportunityPage.paymentsReady)
 
 
 

@@ -16,8 +16,8 @@ class TestOne(BaseClass):
         log = self.getLogger()
         action = ActionChains(self.driver)
         wait = WebDriverWait(self.driver, 20)
-        sfLoginPage = O365LoginPages(self.driver)
 
+        sfLoginPage = O365LoginPages(self.driver)
         sf_HomePage = sfLoginPage.office_365_button()
         tabs = self.driver.window_handles
         sfTab = tabs[len(tabs) - 1]
@@ -31,7 +31,7 @@ class TestOne(BaseClass):
             log.info(e)
 
         clientInformation = self.getTempEmail()
-        expected_conditions.new_window_is_opened(tabs)
+        tabs = self.driver.window_handles
         disposableEmailTab = tabs[len(tabs) - 1]
         self.driver.switch_to.window(sfTab)
         sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
@@ -90,7 +90,7 @@ class TestOne(BaseClass):
 
         try:
             wait.until(expected_conditions.staleness_of(payment_schedule_button))
-            time.sleep(15)
+            time.sleep(10)
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
             time.sleep(5)
@@ -139,8 +139,9 @@ class TestOne(BaseClass):
         self.checkClickablity(invOpportunity.sendEmail)
 
         disposableEmail = invOpportunity.send_email()
-        tabs = self.driver.window_handles
-        self.driver.switch_to.window(tabs[1])
+
+#        tabs = self.driver.window_handles
+        self.driver.switch_to.window(disposableEmailTab)
 
         self.driver.switch_to.default_content()
         disposableEmail.welcome_email().click()
@@ -148,7 +149,9 @@ class TestOne(BaseClass):
 
         portalPasswordCreate = disposableEmail.welcome_email_create_link()
 
-        portal = self.driver.window_handles[2]
+#        portal = self.driver.window_handles[2]
+        tabs = self.driver.window_handles
+        portal = tabs[len(tabs) - 1]
         self.driver.switch_to.window(portal)
         portalPasswordCreate.portal_password().send_keys(self.parameters["client_password"])
         portalPasswordCreate.confirm_password().send_keys(self.parameters["client_password"])
@@ -214,32 +217,42 @@ class TestOne(BaseClass):
         paymentAuthPages.confirm_schedule_button().click()
         paymentAuthPages.apply_signature_button().click()
 
-        self.driver.switch_to.window(tabs[0])
+#        self.driver.switch_to.window(tabs[0])
+        self.driver.switch_to.window(sfTab)
         self.driver.refresh()
 
-        manage_docs_element = wait.until(
-            expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
+        self.checkClickablity(invOpportunity.manageDocsTab)
+        invOpportunity.manage_docs_tab().click()
+        #manage_docs_element = wait.until(
+#            expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
         # elf.driver.execute_script("arguments[0].click();", manage_docs_element)
 
-        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
-            (By.XPATH, "//div[@class='content iframe-parent']/iframe")))
-        # putting sleep here because error that iframe cannot be found is thrown
-        time.sleep(1)
-        wait.until(
-            expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe[@id='manage-forms']")))
-        time.sleep(2)
-        self.driver.find_element(By.CSS_SELECTOR, "button[id='ready-for-payments-btn']").click()
+#        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
+#            (By.XPATH, "//div[@class='content iframe-parent']/iframe")))
+#        # putting sleep here because error that iframe cannot be found is thrown
+#        time.sleep(1)
+#        wait.until(
+#            expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe[@id='manage-forms']")))
+#        time.sleep(2)
+        self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
+        self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
+        #self.driver.find_element(By.CSS_SELECTOR, "button[id='ready-for-payments-btn']").click()
+        invOpportunity.payments_ready().click()
 
-        self.driver.execute_script("window.open('about:blank','admin_portal');")
+        tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
+        adminPortal = tabs[len(tabs) - 1]
+#        self.driver.execute_script("window.open('about:blank','admin_portal');")
         # wait.until(expected_conditions.new_window_is_opened(tabs))
-        self.driver.switch_to.window("admin_portal")
-        self.driver.get("https://admin-dev.optimatax.com/dashboard")
+        expected_conditions.new_window_is_opened(tabs)
+#        self.driver.switch_to.window(tabs)
+        self.driver.switch_to.window(adminPortal)
+#        self.driver.get("https://admin-dev.optimatax.com/dashboard")
 
         self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunities").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunity").click()
-        self.driver.find_element(By.XPATH, "//tr[@id='form-21244']/td[5]").click()
+        self.driver.find_element(By.XPATH, "//div[@id='forms-tab']/div[2]/table/tbody/tr[9]/td[5]").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Approve").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Services").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payments").click()
