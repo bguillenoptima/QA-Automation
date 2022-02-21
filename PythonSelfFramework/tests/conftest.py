@@ -1,5 +1,7 @@
 from selenium import webdriver
 import pytest
+from selenium.webdriver.chrome.service import Service
+
 from TestData.PagesData import PagesData
 
 
@@ -27,7 +29,9 @@ def setup(request):
         options = webdriver.ChromeOptions()
         options.add_argument("user-data-dir=C:\\Users\\OTRA155\\AppData\\Local\\Google\\Chrome\\User Data")
         options.add_argument("profile-directory=Profile 1")
-        driver = webdriver.Chrome(executable_path="C:\\chromedriver.exe", chrome_options=options)
+        s = Service('C:\chromedriver.exe')
+        driver = webdriver.Chrome(service=s, options=options)
+        #driver = webdriver.Chrome(executable_path="C:\\chromedriver.exe", chrome_options=options)
     elif browser_name == "firefox":
         driver = webdriver.Firefox(executable_path="C:\\geckodriver.exe")
     elif browser_name == "edge":
@@ -41,7 +45,6 @@ def setup(request):
         driver.get("https://optimatax.lightning.force.com/lightning/page/home")
 
     driver.implicitly_wait(20)
-    #driver.get("https://optimatax--develop.lightning.force.com/lightning/page/home")
 
     parameters = request.param
     request.cls.parameters = parameters

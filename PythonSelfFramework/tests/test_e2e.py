@@ -140,7 +140,6 @@ class TestOne(BaseClass):
 
         disposableEmail = invOpportunity.send_email()
 
-#        tabs = self.driver.window_handles
         self.driver.switch_to.window(disposableEmailTab)
 
         self.driver.switch_to.default_content()
@@ -149,7 +148,6 @@ class TestOne(BaseClass):
 
         portalPasswordCreate = disposableEmail.welcome_email_create_link()
 
-#        portal = self.driver.window_handles[2]
         tabs = self.driver.window_handles
         portal = tabs[len(tabs) - 1]
         self.driver.switch_to.window(portal)
@@ -217,36 +215,22 @@ class TestOne(BaseClass):
         paymentAuthPages.confirm_schedule_button().click()
         paymentAuthPages.apply_signature_button().click()
 
-#        self.driver.switch_to.window(tabs[0])
+
         self.driver.switch_to.window(sfTab)
         self.driver.refresh()
 
         self.checkClickablity(invOpportunity.manageDocsTab)
         invOpportunity.manage_docs_tab().click()
-        #manage_docs_element = wait.until(
-#            expected_conditions.element_to_be_clickable((By.XPATH, "//ul[@role='tablist']/li[7]/a"))).click()
-        # elf.driver.execute_script("arguments[0].click();", manage_docs_element)
 
-#        wait.until(expected_conditions.frame_to_be_available_and_switch_to_it(
-#            (By.XPATH, "//div[@class='content iframe-parent']/iframe")))
-#        # putting sleep here because error that iframe cannot be found is thrown
-#        time.sleep(1)
-#        wait.until(
-#            expected_conditions.frame_to_be_available_and_switch_to_it((By.XPATH, "//iframe[@id='manage-forms']")))
-#        time.sleep(2)
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
-        #self.driver.find_element(By.CSS_SELECTOR, "button[id='ready-for-payments-btn']").click()
         invOpportunity.payments_ready().click()
 
         tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
         adminPortal = tabs[len(tabs) - 1]
-#        self.driver.execute_script("window.open('about:blank','admin_portal');")
-        # wait.until(expected_conditions.new_window_is_opened(tabs))
-        expected_conditions.new_window_is_opened(tabs)
-#        self.driver.switch_to.window(tabs)
+
         self.driver.switch_to.window(adminPortal)
-#        self.driver.get("https://admin-dev.optimatax.com/dashboard")
+
 
         self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
         self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
@@ -258,7 +242,8 @@ class TestOne(BaseClass):
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payments").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payment Schedule").click()
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Pay Now')]").click()
-        self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']").click()
+        payNow = self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']").click()
+        self.driver.execute_script("arguments[0].click();", payNow)
 
         try:
             alert_success_element = self.driver.find_element(By.XPATH,
