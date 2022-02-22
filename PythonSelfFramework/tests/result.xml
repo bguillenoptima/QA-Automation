@@ -1,1 +1,407 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="344.082" timestamp="2022-02-21T09:41:01.963808" hostname="OTRA155"><testcase classname="test_e2e.TestOne" name="test_e2e[setup0]" time="343.850" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="196.103" timestamp="2022-02-21T18:20:58.556660" hostname="OTRA155"><testcase classname="test_e2e.TestOne" name="test_e2e[setup0]" time="195.849"><failure message="selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;partial link text&quot;,&quot;selector&quot;:&quot;Opportunities&quot;}&#10;  (Session info: chrome=98.0.4758.102)&#10;Stacktrace:&#10;Backtrace:&#10;&#09;Ordinal0 [0x0084FDC3+2555331]&#10;&#09;Ordinal0 [0x007E77F1+2127857]&#10;&#09;Ordinal0 [0x006E2E08+1060360]&#10;&#09;Ordinal0 [0x0070E49E+1238174]&#10;&#09;Ordinal0 [0x0070E69B+1238683]&#10;&#09;Ordinal0 [0x00739252+1413714]&#10;&#09;Ordinal0 [0x00727B54+1342292]&#10;&#09;Ordinal0 [0x007375FA+1406458]&#10;&#09;Ordinal0 [0x00727976+1341814]&#10;&#09;Ordinal0 [0x007036B6+1193654]&#10;&#09;Ordinal0 [0x00704546+1197382]&#10;&#09;GetHandleVerifier [0x009E9622+1619522]&#10;&#09;GetHandleVerifier [0x00A9882C+2336844]&#10;&#09;GetHandleVerifier [0x008E23E1+541697]&#10;&#09;GetHandleVerifier [0x008E1443+537699]&#10;&#09;Ordinal0 [0x007ED18E+2150798]&#10;&#09;Ordinal0 [0x007F1518+2168088]&#10;&#09;Ordinal0 [0x007F1660+2168416]&#10;&#09;Ordinal0 [0x007FB330+2208560]&#10;&#09;BaseThreadInitThunk [0x7650FA29+25]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]">self = &lt;tests.test_e2e.TestOne object at 0x0000029EFDCF68E0&gt;
+
+        def test_e2e(self):
+            log = self.getLogger()
+            action = ActionChains(self.driver)
+            wait = WebDriverWait(self.driver, 20)
+    
+            sfLoginPage = O365LoginPages(self.driver)
+            sf_HomePage = sfLoginPage.office_365_button()
+            tabs = self.driver.window_handles
+            sfTab = tabs[len(tabs) - 1]
+    
+            try:
+                sf_HomePage.create_data_button().click()
+                log.info("In the Salesforce sales console, on the home page, selected 'create data'")
+            except Exception as e:
+                alert = self.driver.switch_to.alert()
+                alert.accept()
+                log.info(e)
+    
+            clientInformation = self.getTempEmail()
+            tabs = self.driver.window_handles
+            disposableEmailTab = tabs[len(tabs) - 1]
+            self.driver.switch_to.window(sfTab)
+            sf_HomePage.create_data_email().send_keys(clientInformation["email_address"])
+            sf_HomePage.create_data_name().send_keys(clientInformation["first_name"] + " " + clientInformation["last_name"])
+    
+            leadPage = sf_HomePage.create_data_submit()
+            log.info(
+                "Filled out the required fields: Name Email set 'stage' drop-down field as 'lead' selected 'create data'")
+            edit_pencil = leadPage.phone_edit_pencil()
+            self.driver.execute_script("arguments[0].click();", edit_pencil)
+    
+            tel_css_selector = leadPage.phone_number().get_attribute("value")
+            leadPage.phone_number().clear()
+            save = leadPage.contact_details_save()
+            self.driver.execute_script("arguments[0].click();", save)
+            log.info("Deleted primary phone field from the created lead and selected 'save'")
+    
+            # Checking visibility means the element is displayed returns the WebElement
+            self.driver.execute_script("window.scrollTo(0,0);")
+    #        self.checkVisibility(leadPage.conversionReadinessPhone)
+            log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
+                     " field that needs to be entered in order to convert")
+    
+            time.sleep(1)
+            self.driver.refresh()
+            wait.until(expected_conditions.staleness_of(edit_pencil))
+    
+            # checkPresence will return WebElement
+            self.driver.execute_script("window.scrollTo(0,0);")
+            edit_pencil = self.checkPresence(leadPage.primaryPhoneEditPencil)
+    
+            try:
+                self.driver.execute_script("arguments[0].click();", edit_pencil)
+                self.driver.execute_script("window.scrollTo(0,0);")
+            except StaleElementReferenceException as Exception:
+                editPencil = leadPage.phone_edit_pencil()
+                self.driver.execute_script("arguments[0].click();", editPencil)
+                log.warning(Exception)
+    
+            leadPage.phone_number().send_keys(tel_css_selector)
+            secondSave = leadPage.contact_details_save()
+            action.move_to_element(secondSave).perform()
+            action.click(secondSave).perform()
+            log.info("Entered all required fields and selected 'save'")
+    
+            convertButton = leadPage.convert_button()
+            self.driver.execute_script("arguments[0].click();", convertButton)
+            log.info("Selected 'convert' in 'lead conversion readiness' window")
+    
+            invOpportunity = leadPage.lead_conversion_save()
+            log.info("Select 'save' in 'lead conversion' modal")
+            # presence works because it only checks if element is on DOM vs visibility which checks both–visibility and DOM
+            payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+            time.sleep(5)
+            self.driver.refresh()
+    
+            try:
+                wait.until(expected_conditions.staleness_of(payment_schedule_button))
+                time.sleep(10)
+                payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+                self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+                time.sleep(5)
+                log.info("In the investigation opportunity, selected 'create payment schedules'")
+            except StaleElementReferenceException as Exception:
+                log.warning(Exception)
+                paymentScheduleButton = invOpportunity.payment_schedule_button()
+                self.driver.execute_script("arguments[0].click();", paymentScheduleButton)
+                log.info("In the investigation opportunity, selected 'create payment schedules'")
+    
+            # checkPresence will return WebElement and check presence
+            try:
+                self.selectDate()
+                invOpportunity.iframe_payment_save_button().click()
+                self.driver.switch_to.default_content()
+                log.info("Selected payment date &lt;= 30 days and selected 'save'")
+                self.checkInvisibility(invOpportunity.paymentModuleHeader)
+            except:
+                log.warning("A modal appeared with no fields so will refresh and try again")
+                self.driver.refresh()
+                log.info("Refreshed successfully")
+                wait.until(expected_conditions.staleness_of(payment_schedule_button))
+    
+                # checkPresence will return WebElement and check presence
+                payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
+                self.driver.execute_script("arguments[0].click();", payment_schedule_button)
+                log.warning("In the investigation opportunity, selected 'create payment schedules'")
+    
+                self.selectDate()
+                invOpportunity.iframe_payment_save_button().click()
+    
+                self.driver.switch_to.default_content()
+                log.info("Selected payment date &lt;= 30 days and selected 'save'")
+                self.checkInvisibility(invOpportunity.paymentModuleHeader)
+    
+            # element is either a locator (text) or an WebElement
+            self.checkClickablity(invOpportunity.manage_docs_tab())
+            manage_docs_element = invOpportunity.manage_docs_tab()
+            self.driver.execute_script("arguments[0].click();", manage_docs_element)
+    
+            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
+            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
+            self.checkClickablity(invOpportunity.manageDocsStart)
+    
+            action.click(invOpportunity.manage_docs_start()).perform()
+            self.checkClickablity(invOpportunity.sendEmail)
+    
+            disposableEmail = invOpportunity.send_email()
+    
+            self.driver.switch_to.window(disposableEmailTab)
+    
+            self.driver.switch_to.default_content()
+            disposableEmail.welcome_email().click()
+            self.driver.switch_to.frame("iframeMail")
+    
+            portalPasswordCreate = disposableEmail.welcome_email_create_link()
+    
+            tabs = self.driver.window_handles
+            portal = tabs[len(tabs) - 1]
+            self.driver.switch_to.window(portal)
+            portalPasswordCreate.portal_password().send_keys(self.parameters["client_password"])
+            portalPasswordCreate.confirm_password().send_keys(self.parameters["client_password"])
+            portalHomepage = portalPasswordCreate.create_account()
+    
+            self.checkClickablity(portalHomepage.acknowledge)
+            portalHomepage.portal_acknowledge().click()
+    
+            try:
+                self.checkClickablity(portalHomepage.getStarted)
+                portalHomepage.portal_get_started().click()
+            except StaleElementReferenceException as Exception:
+                log.info('StaleElementReferenceException while trying to click start, trying to find element again')
+                self.checkClickablity(portalHomepage.getStarted)
+                portalHomepage.portal_get_started().click()
+                log.info(Exception)
+    
+            self.checkClickablity(portalHomepage.agree)
+            signaturePage = portalHomepage.portal_agree()
+    
+            canvas = signaturePage.portal_canvas()
+            self.sign(canvas)
+            infoVerificationPage = signaturePage.portal_submit()
+    
+            infoVerificationPage.ssn_field().send_keys(self.parameters["client_ssn"])
+            dateOfBirthDropDowns = infoVerificationPage.dob_drop_downs()
+            self.enter_dob(dateOfBirthDropDowns)
+            self.checkVisibility(infoVerificationPage.verify)
+    
+            verifyButton = infoVerificationPage.verify_button()
+            self.driver.execute_script("arguments[0].click();", verifyButton)
+            serviceAgreementPage = infoVerificationPage.confirm_button()
+    
+            for serviceAgreement in range(2):
+                serviceAgreementPage.view_form_button().click()
+                serviceAgreementPage.read_more_button().click()
+                self.check_paragraph_contents(serviceAgreementPage.content())
+                serviceAgreementPage.x_button().click()
+                continue_button_location = serviceAgreementPage.continue_button()
+                self.driver.execute_script("arguments[0].click();", continue_button_location)
+    
+            taxInformation = TaxInformationAuthorization(self.driver)
+            taxInformation.view_form().click()
+            self.check_image_visibility(taxInformation.form_image())
+            taxInformation.x_button().click()
+            requestForTranscript = taxInformation.continue_button()
+    
+            transcriptsViewLinks = requestForTranscript.view_form_elements()
+            for viewLink in transcriptsViewLinks:
+                viewLink.click()
+                self.check_image_visibility(requestForTranscript.form_image())
+                requestForTranscript.x_button().click()
+            paymentAuthPages = requestForTranscript.continue_button()
+    
+            paymentAuthPages.payment_signer().click()
+            paymentAuthPages.card_button().click()
+            paymentAuthPages.card_number_field().send_keys(
+                self.parameters["credit_card_number"])
+            paymentAuthPages.cvv_number_field().send_keys(self.parameters["cvv"])
+    
+            for i in range(2):
+                paymentAuthPages.continue_button().click()
+            paymentAuthPages.confirm_schedule_button().click()
+            paymentAuthPages.apply_signature_button().click()
+    
+    
+            self.driver.switch_to.window(sfTab)
+            self.driver.refresh()
+    
+            self.checkClickablity(invOpportunity.manageDocsTab)
+            invOpportunity.manage_docs_tab().click()
+    
+            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
+            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
+            invOpportunity.payments_ready().click()
+    
+            tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
+            adminPortal = tabs[len(tabs) - 1]
+    
+            self.driver.switch_to.window(adminPortal)
+    
+    
+            self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
+            self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+&gt;           self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunities").click()
+
+test_e2e.py:237: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:1244: in find_element
+    return self.execute(Command.FIND_ELEMENT, {
+C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:424: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x0000029EFDD0E700&gt;
+response = {'status': 404, 'value': '{"value":{"error":"no such element","message":"no such element: Unable to locate element: {\...\n\\tRtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]\\n\\tRtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]\\n"}}'}
+
+    def check_response(self, response: Dict[str, Any]) -&gt; None:
+        """
+        Checks that a JSON response from the WebDriver does not have an error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get('status', None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get('value', None)
+            if value_json and isinstance(value_json, str):
+                import json
+                try:
+                    value = json.loads(value_json)
+                    if len(value.keys()) == 1:
+                        value = value['value']
+                    status = value.get('error', None)
+                    if not status:
+                        status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                        message = value.get("value") or value.get("message")
+                        if not isinstance(message, str):
+                            value = message
+                            message = message.get('message')
+                    else:
+                        message = value.get('message', None)
+                except ValueError:
+                    pass
+    
+        exception_class: Type[WebDriverException]
+        if status in ErrorCode.NO_SUCH_ELEMENT:
+            exception_class = NoSuchElementException
+        elif status in ErrorCode.NO_SUCH_FRAME:
+            exception_class = NoSuchFrameException
+        elif status in ErrorCode.NO_SUCH_SHADOW_ROOT:
+            exception_class = NoSuchShadowRootException
+        elif status in ErrorCode.NO_SUCH_WINDOW:
+            exception_class = NoSuchWindowException
+        elif status in ErrorCode.STALE_ELEMENT_REFERENCE:
+            exception_class = StaleElementReferenceException
+        elif status in ErrorCode.ELEMENT_NOT_VISIBLE:
+            exception_class = ElementNotVisibleException
+        elif status in ErrorCode.INVALID_ELEMENT_STATE:
+            exception_class = InvalidElementStateException
+        elif status in ErrorCode.INVALID_SELECTOR \
+                or status in ErrorCode.INVALID_XPATH_SELECTOR \
+                or status in ErrorCode.INVALID_XPATH_SELECTOR_RETURN_TYPER:
+            exception_class = InvalidSelectorException
+        elif status in ErrorCode.ELEMENT_IS_NOT_SELECTABLE:
+            exception_class = ElementNotSelectableException
+        elif status in ErrorCode.ELEMENT_NOT_INTERACTABLE:
+            exception_class = ElementNotInteractableException
+        elif status in ErrorCode.INVALID_COOKIE_DOMAIN:
+            exception_class = InvalidCookieDomainException
+        elif status in ErrorCode.UNABLE_TO_SET_COOKIE:
+            exception_class = UnableToSetCookieException
+        elif status in ErrorCode.TIMEOUT:
+            exception_class = TimeoutException
+        elif status in ErrorCode.SCRIPT_TIMEOUT:
+            exception_class = TimeoutException
+        elif status in ErrorCode.UNKNOWN_ERROR:
+            exception_class = WebDriverException
+        elif status in ErrorCode.UNEXPECTED_ALERT_OPEN:
+            exception_class = UnexpectedAlertPresentException
+        elif status in ErrorCode.NO_ALERT_OPEN:
+            exception_class = NoAlertPresentException
+        elif status in ErrorCode.IME_NOT_AVAILABLE:
+            exception_class = ImeNotAvailableException
+        elif status in ErrorCode.IME_ENGINE_ACTIVATION_FAILED:
+            exception_class = ImeActivationFailedException
+        elif status in ErrorCode.MOVE_TARGET_OUT_OF_BOUNDS:
+            exception_class = MoveTargetOutOfBoundsException
+        elif status in ErrorCode.JAVASCRIPT_ERROR:
+            exception_class = JavascriptException
+        elif status in ErrorCode.SESSION_NOT_CREATED:
+            exception_class = SessionNotCreatedException
+        elif status in ErrorCode.INVALID_ARGUMENT:
+            exception_class = InvalidArgumentException
+        elif status in ErrorCode.NO_SUCH_COOKIE:
+            exception_class = NoSuchCookieException
+        elif status in ErrorCode.UNABLE_TO_CAPTURE_SCREEN:
+            exception_class = ScreenshotException
+        elif status in ErrorCode.ELEMENT_CLICK_INTERCEPTED:
+            exception_class = ElementClickInterceptedException
+        elif status in ErrorCode.INSECURE_CERTIFICATE:
+            exception_class = InsecureCertificateException
+        elif status in ErrorCode.INVALID_COORDINATES:
+            exception_class = InvalidCoordinatesException
+        elif status in ErrorCode.INVALID_SESSION_ID:
+            exception_class = InvalidSessionIdException
+        elif status in ErrorCode.UNKNOWN_METHOD:
+            exception_class = UnknownMethodException
+        else:
+            exception_class = WebDriverException
+        if not value:
+            value = response['value']
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and 'message' in value:
+            message = value['message']
+    
+        screen = None  # type: ignore[assignment]
+        if 'screen' in value:
+            screen = value['screen']
+    
+        stacktrace = None
+        st_value = value.get('stackTrace') or value.get('stacktrace')
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split('\n')
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = self._value_or_default(frame, 'lineNumber', '')
+                        file = self._value_or_default(frame, 'fileName', '&lt;anonymous&gt;')
+                        if line:
+                            file = "%s:%s" % (file, line)
+                        meth = self._value_or_default(frame, 'methodName', '&lt;anonymous&gt;')
+                        if 'className' in frame:
+                            meth = "%s.%s" % (frame['className'], meth)
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if 'data' in value:
+                alert_text = value['data'].get('text')
+            elif 'alert' in value:
+                alert_text = value['alert'].get('text')
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"partial link text","selector":"Opportunities"}
+E         (Session info: chrome=98.0.4758.102)
+E       Stacktrace:
+E       Backtrace:
+E       	Ordinal0 [0x0084FDC3+2555331]
+E       	Ordinal0 [0x007E77F1+2127857]
+E       	Ordinal0 [0x006E2E08+1060360]
+E       	Ordinal0 [0x0070E49E+1238174]
+E       	Ordinal0 [0x0070E69B+1238683]
+E       	Ordinal0 [0x00739252+1413714]
+E       	Ordinal0 [0x00727B54+1342292]
+E       	Ordinal0 [0x007375FA+1406458]
+E       	Ordinal0 [0x00727976+1341814]
+E       	Ordinal0 [0x007036B6+1193654]
+E       	Ordinal0 [0x00704546+1197382]
+E       	GetHandleVerifier [0x009E9622+1619522]
+E       	GetHandleVerifier [0x00A9882C+2336844]
+E       	GetHandleVerifier [0x008E23E1+541697]
+E       	GetHandleVerifier [0x008E1443+537699]
+E       	Ordinal0 [0x007ED18E+2150798]
+E       	Ordinal0 [0x007F1518+2168088]
+E       	Ordinal0 [0x007F1660+2168416]
+E       	Ordinal0 [0x007FB330+2208560]
+E       	BaseThreadInitThunk [0x7650FA29+25]
+E       	RtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]
+E       	RtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]
+
+C:\Python39\lib\site-packages\selenium\webdriver\remote\errorhandler.py:247: NoSuchElementException</failure></testcase></testsuite></testsuites>

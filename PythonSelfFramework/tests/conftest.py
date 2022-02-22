@@ -13,7 +13,7 @@ def pytest_addoption(parser):
         "--browser_name", action="store", default="chrome"
     )
     parser.addoption(
-        "--env_name", action="store", default="https://optimatax--develop.lightning.force.com/lightning/page/home"
+        "--env_name", action="store", default= "dev"
     )
 
 
@@ -49,6 +49,7 @@ def setup(request):
     parameters = request.param
     request.cls.parameters = parameters
     request.cls.driver = driver
+    request.cls.env_name = env_name
     yield
     driver.quit()
 

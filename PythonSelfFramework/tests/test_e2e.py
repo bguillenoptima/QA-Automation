@@ -50,6 +50,7 @@ class TestOne(BaseClass):
         log.info("Deleted primary phone field from the created lead and selected 'save'")
 
         # Checking visibility means the element is displayed returns the WebElement
+        wait.until(expected_conditions.text_to_be_present_in_element(leadPage.conversionReadinessPhone, "Phone"))
         self.driver.execute_script("window.scrollTo(0,0);")
 #        self.checkVisibility(leadPage.conversionReadinessPhone)
         log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
@@ -226,7 +227,14 @@ class TestOne(BaseClass):
         self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
         invOpportunity.payments_ready().click()
 
-        tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
+        if self.env_name == "dev":
+            tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
+        elif self.env_name == "staging":
+            tabs = self.openTab("admin_portal", "https://admin-staging.optimatax.com/dashboard")
+        elif self.env_name == "prod":
+            self.driver.get("https://admin.optimatax.com/dashboard")
+
+
         adminPortal = tabs[len(tabs) - 1]
 
         self.driver.switch_to.window(adminPortal)
@@ -242,15 +250,13 @@ class TestOne(BaseClass):
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payments").click()
         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payment Schedule").click()
         self.driver.find_element(By.XPATH, "//button[contains(text(),'Pay Now')]").click()
-        payNow = self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']").click()
+        payNow = self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']")
         self.driver.execute_script("arguments[0].click();", payNow)
 
         try:
-            alert_success_element = self.driver.find_element(By.XPATH,
-                                                             "//div[contains(text(), 'processed successfully.')]")
+            alert_success_element = self.driver.find_element(By.XPATH, "//div[contains(text(), 'processed successfully.')]")
             wait.until(expected_conditions.visibility_of(alert_success_element))
             print(alert_success_element.text)
         except:
             print("Unable to verify alert-success for Payment")
 
-        self.driver.switch_to.window(tabs[0])
