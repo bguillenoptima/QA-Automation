@@ -11,6 +11,14 @@ class PortalHomePage:
     acknowledge = (By.XPATH, "//button[contains(text(), 'Acknowledge')]")
     getStarted = (By.XPATH, "//button[contains(text(), 'Started')]")
     agree = (By.LINK_TEXT, "I Agree")
+    accountDropdown = (By.CSS_SELECTOR, "a[id='accountDropdown']")
+    logOut = (By.PARTIAL_LINK_TEXT, "Log out")
+
+    def account_drop_down(self):
+        return self.driver.find_element(*PortalHomePage.accountDropdown)
+
+    def log_out(self):
+        return self.driver.find_element(*PortalHomePage.logOut)
 
     def portal_acknowledge(self):
         return self.driver.find_element(*PortalHomePage.acknowledge)

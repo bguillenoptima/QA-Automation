@@ -14,7 +14,7 @@ class AdminOpportunities:
     paymentsTab = (By.PARTIAL_LINK_TEXT, "Payments")
     paymentsSchedule = (By.PARTIAL_LINK_TEXT, "Payment Schedule")
     payNow = (By.XPATH, "//button[contains(text(),'Pay Now')]")
-    process_payment = (By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']")
+    processPayment = (By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']")
 
 
     def inv_opportunity(self):
@@ -39,6 +39,6 @@ class AdminOpportunities:
         return self.driver.find_element(*AdminOpportunities.payNow)
 
     def process_payment(self):
-        return self.driver.find_element(*AdminOpportunities.process_payment)
+        return self.driver.find_element(*AdminOpportunities.processPayment)
 
 

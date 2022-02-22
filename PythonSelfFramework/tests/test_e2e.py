@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 import time
 from selenium.webdriver.support.wait import WebDriverWait
-
 from pageObjects.O365LoginPages import O365LoginPages
 from selenium.common.exceptions import StaleElementReferenceException
 from utilities.BaseClass import BaseClass
@@ -91,10 +90,10 @@ class TestOne(BaseClass):
 
         try:
             wait.until(expected_conditions.staleness_of(payment_schedule_button))
-            time.sleep(10)
+            time.sleep(7)
             payment_schedule_button = self.checkPresence(invOpportunity.paymentScheduleButton)
             self.driver.execute_script("arguments[0].click();", payment_schedule_button)
-            time.sleep(5)
+            time.sleep(4)
             log.info("In the investigation opportunity, selected 'create payment schedules'")
         except StaleElementReferenceException as Exception:
             log.warning(Exception)
@@ -185,7 +184,9 @@ class TestOne(BaseClass):
         serviceAgreementPage = infoVerificationPage.confirm_button()
 
         for serviceAgreement in range(2):
+            self.checkClickablity(serviceAgreementPage.viewForm)
             serviceAgreementPage.view_form_button().click()
+            self.checkClickablity(serviceAgreementPage.readMore)
             serviceAgreementPage.read_more_button().click()
             self.check_paragraph_contents(serviceAgreementPage.content())
             serviceAgreementPage.x_button().click()
@@ -240,37 +241,25 @@ class TestOne(BaseClass):
         self.driver.switch_to.window(adminPortal)
 
 
-        #self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
         adminDashboard.search_field().send_keys(clientInformation["first_name"])
-        #self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
         adminDashboard.search_button().click()
-        #self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunities").click()
         adminOpportunities = adminDashboard.search_results_opportunities_button()
-       # self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunity").click()
         adminOpportunities.inv_opportunity().click()
-        #self.driver.find_element(By.XPATH, "//div[@id='forms-tab']/div[2]/table/tbody/tr[9]/td[5]").click()
         adminOpportunities.payment_authorization().click()
-        #self.driver.find_element(By.PARTIAL_LINK_TEXT, "Approve").click()
         adminOpportunities.payment_approval().click()
-        #self.driver.find_element(By.PARTIAL_LINK_TEXT, "Services").click()
         adminOpportunities.services_link().click()
-        #self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payments").click()
         adminOpportunities.payments_tab().click()
-        #self.driver.find_element(By.PARTIAL_LINK_TEXT, "Payment Schedule").click()
         adminOpportunities.payments_schedule().click()
-        #self.driver.find_element(By.XPATH, "//button[contains(text(),'Pay Now')]").click()
-        adminOpportunities.payNow().click()
-        #payNow = self.driver.find_element(By.XPATH, "//button[contains(text(),'Pay Now')]")
-        #action.click(payNow)
-        #self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']").click()
+        adminOpportunities.pay_now().click()
         adminOpportunities.process_payment().click()
-        #processPayment = self.driver.find_element(By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']")
-        #self.driver.execute_script("arguments[0].click();", processPayment)
-
         try:
             alert_success_element = self.driver.find_element(By.XPATH, "//div[contains(text(), 'processed successfully.')]")
             wait.until(expected_conditions.visibility_of(alert_success_element))
             print(alert_success_element.text)
         except:
             print("Unable to verify alert-success for Payment")
+
+        self.driver.switch_to.window(portal)
+        portalHomepage.account_drop_down().click()
+        portalHomepage.log_out().click()
 
