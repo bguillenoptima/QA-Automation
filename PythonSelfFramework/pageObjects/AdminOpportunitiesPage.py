@@ -15,6 +15,7 @@ class AdminOpportunities:
     paymentsSchedule = (By.PARTIAL_LINK_TEXT, "Payment Schedule")
     payNow = (By.XPATH, "//button[contains(text(),'Pay Now')]")
     processPayment = (By.CSS_SELECTOR, "button[data-form-id='pay-now-otr-form']")
+    paymentSuccessAlert = (By.XPATH, "//div[contains(text(), 'processed successfully.')]")
 
 
     def inv_opportunity(self):
@@ -40,5 +41,8 @@ class AdminOpportunities:
 
     def process_payment(self):
         return self.driver.find_element(*AdminOpportunities.processPayment)
+
+    def payments_alert_success(self):
+        return self.driver.find_element(*AdminOpportunities.paymentSuccessAlert)
 
 

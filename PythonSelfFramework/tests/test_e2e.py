@@ -253,11 +253,11 @@ class TestOne(BaseClass):
         adminOpportunities.pay_now().click()
         adminOpportunities.process_payment().click()
         try:
-            alert_success_element = self.driver.find_element(By.XPATH, "//div[contains(text(), 'processed successfully.')]")
+            alert_success_element = adminOpportunities.payments_alert_success()
             wait.until(expected_conditions.visibility_of(alert_success_element))
-            print(alert_success_element.text)
+            log.info(alert_success_element.text)
         except:
-            print("Unable to verify alert-success for Payment")
+            log.warning("Unable to verify alert-success for Payment")
 
         self.driver.switch_to.window(portal)
         portalHomepage.account_drop_down().click()
