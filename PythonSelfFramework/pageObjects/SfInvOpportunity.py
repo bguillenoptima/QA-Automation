@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from pageObjects.DisposableEmailPage import DisposableEmailPage
+from pageObjects.AdminDashboardPage import AdminDashboardPage
 
 
 class SalesForceInvOpportunityPage:
@@ -47,7 +48,11 @@ class SalesForceInvOpportunityPage:
         return emailInbox
 
     def payments_ready(self):
-        return self.driver.find_element(*SalesForceInvOpportunityPage.paymentsReady)
+        self.driver.find_element(*SalesForceInvOpportunityPage.paymentsReady).click()
+        admin_dashboard = AdminDashboardPage(self.driver)
+        return admin_dashboard
+
+
 
 
 

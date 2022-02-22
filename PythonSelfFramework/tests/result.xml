@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="196.103" timestamp="2022-02-21T18:20:58.556660" hostname="OTRA155"><testcase classname="test_e2e.TestOne" name="test_e2e[setup0]" time="195.849"><failure message="selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;partial link text&quot;,&quot;selector&quot;:&quot;Opportunities&quot;}&#10;  (Session info: chrome=98.0.4758.102)&#10;Stacktrace:&#10;Backtrace:&#10;&#09;Ordinal0 [0x0084FDC3+2555331]&#10;&#09;Ordinal0 [0x007E77F1+2127857]&#10;&#09;Ordinal0 [0x006E2E08+1060360]&#10;&#09;Ordinal0 [0x0070E49E+1238174]&#10;&#09;Ordinal0 [0x0070E69B+1238683]&#10;&#09;Ordinal0 [0x00739252+1413714]&#10;&#09;Ordinal0 [0x00727B54+1342292]&#10;&#09;Ordinal0 [0x007375FA+1406458]&#10;&#09;Ordinal0 [0x00727976+1341814]&#10;&#09;Ordinal0 [0x007036B6+1193654]&#10;&#09;Ordinal0 [0x00704546+1197382]&#10;&#09;GetHandleVerifier [0x009E9622+1619522]&#10;&#09;GetHandleVerifier [0x00A9882C+2336844]&#10;&#09;GetHandleVerifier [0x008E23E1+541697]&#10;&#09;GetHandleVerifier [0x008E1443+537699]&#10;&#09;Ordinal0 [0x007ED18E+2150798]&#10;&#09;Ordinal0 [0x007F1518+2168088]&#10;&#09;Ordinal0 [0x007F1660+2168416]&#10;&#09;Ordinal0 [0x007FB330+2208560]&#10;&#09;BaseThreadInitThunk [0x7650FA29+25]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]">self = &lt;tests.test_e2e.TestOne object at 0x0000029EFDCF68E0&gt;
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="177.827" timestamp="2022-02-21T21:19:17.373103" hostname="OTRA155"><testcase classname="test_e2e.TestOne" name="test_e2e[setup0]" time="177.293"><failure message="selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;partial link text&quot;,&quot;selector&quot;:&quot;View&quot;}&#10;  (Session info: chrome=98.0.4758.102)&#10;Stacktrace:&#10;Backtrace:&#10;&#09;Ordinal0 [0x0084FDC3+2555331]&#10;&#09;Ordinal0 [0x007E77F1+2127857]&#10;&#09;Ordinal0 [0x006E2E08+1060360]&#10;&#09;Ordinal0 [0x0070E49E+1238174]&#10;&#09;Ordinal0 [0x0070E69B+1238683]&#10;&#09;Ordinal0 [0x00739252+1413714]&#10;&#09;Ordinal0 [0x00727B54+1342292]&#10;&#09;Ordinal0 [0x007375FA+1406458]&#10;&#09;Ordinal0 [0x00727976+1341814]&#10;&#09;Ordinal0 [0x007036B6+1193654]&#10;&#09;Ordinal0 [0x00704546+1197382]&#10;&#09;GetHandleVerifier [0x009E9622+1619522]&#10;&#09;GetHandleVerifier [0x00A9882C+2336844]&#10;&#09;GetHandleVerifier [0x008E23E1+541697]&#10;&#09;GetHandleVerifier [0x008E1443+537699]&#10;&#09;Ordinal0 [0x007ED18E+2150798]&#10;&#09;Ordinal0 [0x007F1518+2168088]&#10;&#09;Ordinal0 [0x007F1660+2168416]&#10;&#09;Ordinal0 [0x007FB330+2208560]&#10;&#09;BaseThreadInitThunk [0x7650FA29+25]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]">self = &lt;tests.test_e2e.TestOne object at 0x000002A7CD6F6A90&gt;
 
         def test_e2e(self):
             log = self.getLogger()
@@ -38,6 +38,7 @@
             log.info("Deleted primary phone field from the created lead and selected 'save'")
     
             # Checking visibility means the element is displayed returns the WebElement
+            wait.until(expected_conditions.text_to_be_present_in_element(leadPage.conversionReadinessPhone, "Phone"))
             self.driver.execute_script("window.scrollTo(0,0);")
     #        self.checkVisibility(leadPage.conversionReadinessPhone)
             log.info("Under 'lead conversion readiness' window–'convert' button is not visible and shows phone"
@@ -172,67 +173,19 @@
             serviceAgreementPage = infoVerificationPage.confirm_button()
     
             for serviceAgreement in range(2):
-                serviceAgreementPage.view_form_button().click()
-                serviceAgreementPage.read_more_button().click()
-                self.check_paragraph_contents(serviceAgreementPage.content())
-                serviceAgreementPage.x_button().click()
-                continue_button_location = serviceAgreementPage.continue_button()
-                self.driver.execute_script("arguments[0].click();", continue_button_location)
-    
-            taxInformation = TaxInformationAuthorization(self.driver)
-            taxInformation.view_form().click()
-            self.check_image_visibility(taxInformation.form_image())
-            taxInformation.x_button().click()
-            requestForTranscript = taxInformation.continue_button()
-    
-            transcriptsViewLinks = requestForTranscript.view_form_elements()
-            for viewLink in transcriptsViewLinks:
-                viewLink.click()
-                self.check_image_visibility(requestForTranscript.form_image())
-                requestForTranscript.x_button().click()
-            paymentAuthPages = requestForTranscript.continue_button()
-    
-            paymentAuthPages.payment_signer().click()
-            paymentAuthPages.card_button().click()
-            paymentAuthPages.card_number_field().send_keys(
-                self.parameters["credit_card_number"])
-            paymentAuthPages.cvv_number_field().send_keys(self.parameters["cvv"])
-    
-            for i in range(2):
-                paymentAuthPages.continue_button().click()
-            paymentAuthPages.confirm_schedule_button().click()
-            paymentAuthPages.apply_signature_button().click()
-    
-    
-            self.driver.switch_to.window(sfTab)
-            self.driver.refresh()
-    
-            self.checkClickablity(invOpportunity.manageDocsTab)
-            invOpportunity.manage_docs_tab().click()
-    
-            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeOne)
-            self.checkFrameAndSwitchToIt(invOpportunity.manageDocsIframeTwo)
-            invOpportunity.payments_ready().click()
-    
-            tabs = self.openTab("admin_portal", "https://admin-dev.optimatax.com/dashboard")
-            adminPortal = tabs[len(tabs) - 1]
-    
-            self.driver.switch_to.window(adminPortal)
-    
-    
-            self.driver.find_element(By.CSS_SELECTOR, "input[id='search']").send_keys(clientInformation["first_name"])
-            self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
-&gt;           self.driver.find_element(By.PARTIAL_LINK_TEXT, "Opportunities").click()
+&gt;               serviceAgreementPage.view_form_button().click()
 
-test_e2e.py:237: 
+test_e2e.py:188: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\pageObjects\ServiceAgreementPage.py:16: in view_form_button
+    return self.driver.find_element(*ServiceAgreementPages.viewForm)
 C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:1244: in find_element
     return self.execute(Command.FIND_ELEMENT, {
 C:\Python39\lib\site-packages\selenium\webdriver\remote\webdriver.py:424: in execute
     self.error_handler.check_response(response)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x0000029EFDD0E700&gt;
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000002A7CD707EE0&gt;
 response = {'status': 404, 'value': '{"value":{"error":"no such element","message":"no such element: Unable to locate element: {\...\n\\tRtlGetAppContainerNamedObjectPath [0x76ED7A9E+286]\\n\\tRtlGetAppContainerNamedObjectPath [0x76ED7A6E+238]\\n"}}'}
 
     def check_response(self, response: Dict[str, Any]) -&gt; None:
@@ -377,7 +330,7 @@ response = {'status': 404, 'value': '{"value":{"error":"no such element","messag
                 alert_text = value['alert'].get('text')
             raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
 &gt;       raise exception_class(message, screen, stacktrace)
-E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"partial link text","selector":"Opportunities"}
+E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"partial link text","selector":"View"}
 E         (Session info: chrome=98.0.4758.102)
 E       Stacktrace:
 E       Backtrace:
